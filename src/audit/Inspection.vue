@@ -52,14 +52,14 @@
                         <div class="pickerTitle">请选择问题类型</div>
                         <mt-picker :slots="quesTypeItems" @change="quesTypeChange" value-key="TypeName"></mt-picker>
                     </mt-popup>
-                    <mt-field label="详情" placeholder="请输入详细信息"
+                    <mt-field label="详情"
                               type="textarea" rows="4"
                               v-bind:value="optionID"
                               v-model="details">
                     </mt-field>
 
                     <div class="mui-table-view-cell">
-                        <div>上传照片</div>
+                        <div class="filesend">上传照片</div>
                         <div class="content">
                             <input type="hidden" id="ckjl.id" name="ckjl.id" value="429">
                             <div class="collapse-content">
@@ -91,7 +91,7 @@
                         <mt-picker :slots="proStatusItems" @change="proStatusChange" value-key="Name"></mt-picker>
                     </mt-popup>
 
-                    <mt-field label="处理意见" placeholder="请输入处理意见" type="textarea" rows="4" v-model="advance"
+                    <mt-field label="处理意见" type="textarea" rows="4" v-model="advance"
                               class="detailscss"></mt-field>
 
                     <div class="mui-table-view-cell" @click="chooseBlackList()">
@@ -106,10 +106,10 @@
 
                     <mt-cell title="黑名单" class="detailscss" >
                         <!--              <mt-radio v-model="value" :options="radiolist"></mt-radio>-->
-                        <mt-checklist v-model="blackcheck" :options="radiolist" @change="blackChange"></mt-checklist>
+                        <mt-checklist v-model="blackcheck" :options="radiolist" @change="blackChange" class="checkblack"></mt-checklist>
                     </mt-cell>
 
-                    <mt-field label="黑名单备注" placeholder="请输入黑名单备注" type="textarea" rows="4" v-model="blackRemark"
+                    <mt-field label="黑名单备注" type="textarea" rows="4" v-model="blackRemark"
                               class="black_remark"></mt-field>
                     <mt-button type="primary" size="large" @click="savaData" class="submit_btn">确定</mt-button>
 
@@ -117,13 +117,11 @@
 
                 <!--     客户资料-->
                 <mt-tab-container-item id="audit_history">
-                    <!--        稽查历史点击==》到详情-->
                     <ul>
                         <div style="height: 76px;width: 100%;"></div>
                         <li class="audit_cus">
                             <div class="cusNews">
-                                <div class="houseAddr"><span><span
-                                        class="status">地址：</span>{{this.houseList.Address}}</span>
+                                <div class="people_name"><span class="status">地址：</span>{{this.houseList.Address}}
                                 </div>
                                 <div class="cusname"><span class="status">姓名：</span>{{this.cusInform.CusName}}</div>
                             </div>
@@ -132,8 +130,9 @@
                                 </div>
                                 <div class="phone"><span class="status">客户类型：</span>{{this.cusInform.strCusType}}</div>
                             </div>
-                            <mt-field label="备注" placeholder="备注" type="textarea" rows="3"
-                                       readonly>{{this.cusInform.Remark}}</mt-field>
+                            <div class="people_name"><span class="status">备注：</span>{{this.houseList.Address}}</div>
+<!--                            <mt-field label="备注" type="textarea" rows="3" class="cus_remark"-->
+<!--                                      readonly>{{this.cusInform.Remark}}</mt-field>-->
                         </li>
                     </ul>
 
@@ -143,21 +142,22 @@
                 <mt-tab-container-item id="audit_user">
                     <ul>
                         <div style="height: 87px;width: 100%;"></div>
+                        <router-link></router-link>
                         <li v-for="(item,index) in auditHistory" :key="index"
                             class="bolt_argument">
                             <div class="plan">
                                 <span class="status">稽查计划：</span><span>{{item.PlanName}}</span>
                             </div>
                             <div class="model_bottom">
-                                <div class="phone">
+                                <div class="isQues">
                                     <span class="status">供热年度：</span>{{item.CurrentYear}}
                                 </div>
-                                <div class="phone"><span class="status">稽查时间：</span>{{item.InspectionTime}}</div>
+                                <div class="status_deal"><span class="status">稽查时间：</span>{{item.InspectionTime}}</div>
                             </div>
                             <div class="model_bottom">
-                                <div class="phone"><span class="status">是否有问题：</span>{{item.strIsProblem}}
+                                <div class="isQues"><span class="status">是否有问题：</span>{{item.strIsProblem}}
                                 </div>
-                                <div class="phone"><span class="status">处理状态：</span>{{item.strProStatus}}</div>
+                                <div class="status_deal"><span class="status">处理状态：</span>{{item.strProStatus}}</div>
                             </div>
                             <div class="address"><span class="status">稽查人员：</span>{{item.InspectionPersonName}}</div>
                         </li>
@@ -169,7 +169,7 @@
     </div>
 </template>
 <script>
-    import {MessageBox, Popup, Toast, Picker, Actionsheet, Cell, DatetimePicker} from "mint-ui"; //引入mint-ui插件
+    import {MessageBox, Popup, Toast, Picker, Actionsheet, Cell, DatetimePicker} from "mint-ui";
     var index = 1;
     var files = [];
     var w = null;
@@ -180,8 +180,6 @@
     var pageSource = "";
     export default {
         data() {
-
-            let that = this;
             return {
                 auditHistory: [],
                 question: '', //初始选择有问题
@@ -210,8 +208,7 @@
                         isChecked: false,
                     }
                 ], //有问题  无问题  单选按钮
-
-
+                blackCheckbox:1,
                 slotsDeal: [],  //问题类型/处理状态
                 questionState: false,  //问题类型  点击显示隐藏的变量
                 changeDealState: false, //处理状态  点击显示隐藏的变量
@@ -226,7 +223,6 @@
                 blacklist: '',     //黑名单   加入 移除
                 radiolist: '',
                 blackcheck: "",
-                ProStatus: '',      //处理状态
                 ProStatusMeaning: '',
                 BlackListType: '',
                 BlackListRemark: '',
@@ -377,91 +373,19 @@
                 zm = 0;
                 img_index = 0;
             }
-
-            //获取工单信息
-            // if (pageSource !== "workOrderReplyResult") {
-            //     //获取工单信息
-            //     this.$http
-            //         .get(this.$myConfig.host + "/api/MyWorkBill/GetWaitReplyConditions", {
-            //             params: {
-            //                 WorkBillID: this.workBillParams.WorkBillID,
-            //                 FlowID: this.workBillParams.FlowID,
-            //                 FlowNodeID: this.workBillParams.FlowNodeID,
-            //                 FlowInstantID: this.workBillParams.FlowInstantID,
-            //                 FlowToDoTs: this.workBillParams.FlowToDoTS,
-            //                 UserID: this.$store.UserInfo.UserID,
-            //                 FinishDetailValue: this.specificText,
-            //                 FinishValue: this.FinishText,
-            //                 UpLoadImages: this.workBillParams.UpLoadImages
-            //             }
-            //         })
-            //         .then(
-            //             function (res) {
-            //                 var resInfo = $.parseJSON(res.bodyText);
-            //                 this.person = resInfo.contactPerson;
-            //                 this.address = resInfo.HouseAddress;
-            //                 this.startTime = resInfo.addTime;
-            //                 //具体情况赋值
-            //                 this.replyFinishItems[0].values = resInfo.FinishStateList;
-            //                 let replySpecificItemsArr = [];
-            //                 for (let i = 0; i < resInfo.FinishDetailStateList.length; i++) {
-            //                     if (
-            //                         resInfo.FinishDetailStateList[i].FinishValue ==
-            //                         resInfo.FinishStateList[0].FinishValue
-            //                     ) {
-            //                         replySpecificItemsArr.push(resInfo.FinishDetailStateList[i]);
-            //                     }
-            //                 }
-            //                 this.replySpecificItems[0].values = replySpecificItemsArr;
-            //                 this.allReplySpecificItems = resInfo.FinishDetailStateList;
-            //                 this.isLoading = false;
-            //             },
-            //             function (err) {
-            //                 Toast("请检查您的网络");
-            //                 this.isLoading = false;
-            //             }
-            //         );
-            // }
-
-            //判断处理结果是否已输入内容并保存
-            // console.log(this.$store.wordOrderReplyResult);
-            // if (
-            //     this.$store.wordOrderReplyResult == undefined ||
-            //     this.$store.wordOrderReplyResult == ""
-            // ) {
-            //     this.replyResultDefault = true;
-            //     this.replyResultValue = false;
-            // } else {
-            //     this.wordOrderReplyResult = this.$store.wordOrderReplyResult;
-            //     this.replyResultDefault = false;
-            //     this.replyResultValue = true;
-            // }
         },
 
         mounted() {
-            // var _this = this
-            // this.$http
-            //     .get(this.$myConfig.host + '/Api/DropdownList/GetProblemDropDown')
-            //     .then(res => {
-            //         _this.questionList = res.body.Data
-            //         _this.slotsDeal = _this.questionList.map(function (item) {
-            //             return item.TypeName
-            //         })
-            //         // console.log(_this.questionList)    //问题类型 详情数组  SendJobID 信息数组
-            //         // console.log(this.slotsDeal)    //问题类型数组
-            //     })
-
             // 初始化页面赋值
             this.houseList = this.$store.state.houseList;        //上页获取的信息
             this.IsProblem = this.houseList.IsProblem;   //是否有问题 无1  有2
             this.quesTypeValue = '';     // 问题类型 id
-            this.proStatusSelectedName = ""; //问题类型 文字
             this.details = '';   //详情（表单textarea）
             this.advance = "";  // 处理意见
             this.blackcheck = "";  //黑名单 加入移除 传值  0 移除  1 加入
-            this.btnState = "";     //处理状态
+            this.proStatusValue =this.ProStatus;     //处理状态
             this.blacker = "";     //黑名单性质
-            this.blackRemark = "请输入备注";  //黑名单备注
+            this.blackRemark = this.houseList.BlackRemark;  //黑名单备注
             this.check(1);        //是否有问题   初始选择1  无问题
             this.ContactPhone = this.$store.state.houseList.Mobile   // 手机号
             this.CusList()         //客户资料接口
@@ -471,7 +395,7 @@
             //     .get(this.$myConfig.host + '/Api/InspectionApp/GetSendJob', {
             //         params: {
             //             status: 0,
-            //             chargeYear: this.$store.state.CurrentYear,
+            //             chargeYear: this.$store.CurrentYear,
             //             InspectionID: this.$store.state.inspectionID,
             //             CommunityID: this.$store.state.communityID,
             //         }
@@ -483,6 +407,7 @@
             //----------------------------------------------------------------黑名单显示  加入 / 移除
             if (this.houseList.IsCheckBlack == 0) {
                 this.radiolist = ["加入"]
+
             } else if (this.houseList.IsCheckBlack == 1) {
                 this.radiolist = ["移除"]
             }
@@ -495,8 +420,11 @@
                         var resInfo = res.body.Data
                         if (resInfo) {
                             this.quesTypeItems[0].values = res.body.Data;
+                            this.quesTypeItems[0].values.unshift({TypeName:'请选择 *', ID:''})
+                            console.log(this.quesTypeItems)
                         }
                     });
+
 
             //---------------------------------------------------------------处理状态
             this.$http
@@ -506,6 +434,9 @@
                         var resInfo = res.body.Data
                         if (resInfo) {
                             this.proStatusItems[0].values = res.body.Data;
+                            this.proStatusItems[0].values.unshift({Name:'请选择 *', ID:''})
+                            console.log(this.proStatusItems)
+                            // console.log(resInfo)
                         }
                     });
 
@@ -518,6 +449,8 @@
                         var resInfo = res.body.Data
                         if (resInfo) {
                             this.BlackListItems[0].values = res.body.Data;
+                            this.BlackListItems[0].values.unshift({TypeName:'请选择 *', ID:''})
+                            console.log(this.BlackListItems)
                         }
                     });
 
@@ -549,15 +482,38 @@
                     this.quesTypeSelectedName = values[0].TypeName;
                     this.quesTypeValue = values[0].ID;
                     this.details = values[0].Remark;
+                    console.log(this.quesTypeValue)
                 }
             },
+
             blackChange() {     //t添加移除 黑名单
                 if (this.radiolist[0] == "加入") {
                     //加入
-                    this.blackcheck = 1 + ""
-                } else {
-                    this.blackcheck = 0 + ""
+                    // Toast('18888888')
+
+
+                    if (this.blackCheckbox == 1) {
+                        this.blackCheckbox = 0;
+                        // Toast('1111111')
+                        this.blackcheck = "1"
+                    } else if (this.blackCheckbox == 0) {
+                        Toast('000000')
+                        this.blackCheckbox = 1;
+                        this.blackcheck = ''
+                    }
                 }
+                // else {
+                //     var y = 0;
+                //     $(".checkblack").click(function () {
+                //         if (y == 0) {
+                //             y = 1;
+                //             this.blackcheck = "1" + ""
+                //         } else if (y == 1) {
+                //             y = 0;
+                //             this.blackcheck = 0 + ""
+                //         }
+                //     })
+                // }
             },
 
 
@@ -571,6 +527,7 @@
                 if (values[0]) {
                     this.proStatusSelectedName = values[0].Name;
                     this.proStatusValue = values[0].ID;
+                    console.log(this.proStatusValue)
                 }
             },
             //--------------------------------------------------黑名单性质
@@ -583,20 +540,10 @@
                 if (values[0]) {
                     this.BlackListSelectedName = values[0].TypeName;
                     this.BlackListValue = values[0].ID;
+                    console.log(this.BlackListValue)
                 }
             },
 
-            // 取消更改数据
-            // deleteData() {
-            //     this.questionType = this.$store.state.questionType    //问题类型
-            //     this.details = this.$store.state.details     //详情（表单textarea）
-            //     this.blacker = this.$store.state.blacker    //黑名单性质
-            //     this.blackRemark = this.$store.state.blackRemark   //黑名单备注
-            //     this.question = this.$store.state.question       //是否有问题  值
-            //     this.btnState = this.$store.state.btnState    //处理状态  选项值
-            //     this.family = this.$store.state.family
-            //     this.onlyread = this.$store.state.onlyread
-            // },
             back() {
                 this.$router.go(-1);
             },
@@ -611,7 +558,7 @@
             },
             onValuesChange(picker, values) {
                 this.questionType = values[0];
-                console.log(values)
+                console.log(this.questionType)
                 // console.log(this.finishText);
             },
             blackList(picker, values) {
@@ -629,8 +576,8 @@
 
             //调用原生选项
             showActionSheet(conf) {
-                if (zm >= 3) {
-                    MessageBox("提示", "只能上传三张图片");
+                if (zm >= 5) {
+                    MessageBox("提示", "只能上传五张图片");
                 } else {
                     var _this = this;
                     var divid = $("#Image").attr("id");
@@ -684,6 +631,7 @@
                                 index,
                                 img_index
                             );
+                            zm--
                         }
                     },
                     "提示",
@@ -709,7 +657,7 @@
             //选取相册图片
             galleryImg(divid) {
                 var _this = this;
-                var n = 3 - zm;
+                var n = 5 - zm;
                 var id = document.getElementById("ckjl.id").value;
 
                 plus.gallery.pick(
@@ -728,11 +676,11 @@
                         filename: "_doc/camera/",
                         filter: "image",
                         multiple: true,
-                        maximum: n, // 最多选择3张图片
+                        maximum: n, // 最多选择5张图片
                         selected: _this.lfs,
                         system: false,
                         onmaxed: function () {
-                            plus.nativeUI.alert("最多只能选择3张图片");
+                            plus.nativeUI.alert("最多只能选择5张图片");
                         }
                     }
                 );
@@ -782,13 +730,13 @@
                 console.log(this.houseList.CusID)
                 // console.log(_this.houseList.CusID)
                 console.log(this.houseList.CusName)
-                console.log(this.quesTypeValue)
+                console.log(this.quesTypeValue)   //问题类型ID
                 console.log(this.IsProblem)
                 console.log(this.details)
                 console.log(this.advance)
-                console.log(this.blackcheck)
-                console.log(this.btnState + '')
-                console.log(this.blacker)
+                console.log(this.blackcheck+'')
+                console.log(this.proStatusValue + '')
+                console.log(this.BlackListValue +'')
                 console.log(this.blackRemark)
 
 
@@ -806,7 +754,7 @@
                                 console.log(info);
                                 //改变全局参数
                                 // _this.$store.operateType = true;
-                                // _this.$router.go(-2);
+                                _this.$router.go(-1);
                                 // _this.$store.wordOrderReplyResult = ""; //清空处理结果
                                 Toast(info.Message);
                             } catch (e) {
@@ -838,14 +786,14 @@
                 task.addData("SendJobID", _this.houseList.SendJobID + '');//_this.workBillParams.WorkBillID);
                 task.addData("CusID", _this.houseList.CusID + '');//_this.workBillParams.WorkBillID);
                 task.addData("CusName", _this.houseList.CusName + '');//_this.workBillParams.WorkBillID);
-                task.addData("ProblemID", _this.quesTypeValue + '');//_this.workBillParams.WorkBillID);
-                task.addData("IsProblem", _this.IsProblem + '');  // _this.workBillParams.latestVersion);
-                task.addData("ProblemDes", _this.details + '');  // _this.workBillParams.FlowInstantID);
-                task.addData("SuggestDes", _this.advance + '');  //_this.workBillParams.FlowToDoTS);
-                task.addData("IsBlack", _this.blackcheck + '');  //_this.$store.UserInfo.UserID + "");
-                task.addData("ProStatus", _this.btnState + ''); //
-                task.addData("BlackListType", _this.blacker + '')// 黑名单性质
-                task.addData("BlackListRemark", _this.blackRemark + '')
+                task.addData("ProblemID", _this.quesTypeValue + '');// 问题类型ID
+                task.addData("IsProblem", _this.IsProblem + '');  // 是否有问题 1 无  2 有
+                task.addData("ProblemDes", _this.details + '');  // 详情
+                task.addData("SuggestDes", _this.advance + '');  //处理意见
+                task.addData("IsBlack", _this.blackcheck + '');  //黑名单  0 移除 1 加入
+                task.addData("ProStatus", _this.proStatusValue + ''); //处理状态ID 123
+                task.addData("BlackListType", _this.BlackListValue + '')// 黑名单性质
+                task.addData("BlackListRemark", _this.blackRemark + '')   //黑名单备注
                 task.start();
                 for (let i = 0; i < _this.imgs.length; i++) {
                     //key需要字符串类型
@@ -1006,7 +954,7 @@
                 this.$http
                     .get(this.$myConfig.host + '/Api/InspectionApp/GetAppInspectionRecList', {
                         params: {
-                            CurrentYear: this.$store.state.CurrentYear,
+                            CurrentYear: this.$store.CurrentYear,
                             CusID: this.$store.state.houseList.CusID,
                             PlanName: '',
                             CommunityName: '',
@@ -1026,6 +974,9 @@
             tel() {
                 plus.device.dial(this.ContactPhone, true);
             },
+
+
+
         },
         // watch: {
         //     selected(val) {
@@ -1074,6 +1025,7 @@
 
     .mint-tab-container {
         margin-top: 10px;
+        color:#232323;
     }
 
     .radio-box {
@@ -1137,20 +1089,24 @@
     }
 
     .mui-table-view-cell {
-        padding: 0.15rem;
+        padding: 10px 15px;
+        line-height:24px;
         background-color: #fff;
     }
 
     .mui-table-view-cell > div {
         float: left;
         width: 25%;
-        color: #666;
+        color: #232323;
     }
-
+    .filesend{
+        line-height: 60px;
+    }
     .mui-table-view-cell > span {
         float: right;
+        margin-top: -6px;
         max-width: 75%;
-        color: #333;
+        color: #595959;
     }
 
     .mui-icon {
@@ -1185,7 +1141,9 @@
             background: url("../../static/images/audit/record/Group 13@1.5x.png") no-repeat center;
         }
     }
-
+    .cus_remark mint-cell-wrapper{
+        padding:0;
+    }
     .uploadImage {
         display: inline-block;
         width: 0.6rem;
@@ -1229,7 +1187,7 @@
     }
 
     .addRoomBtns:nth-child(1) {
-        color: #999;
+        color: #232323;
         border-right: 0.01rem solid #999;
     }
 
@@ -1293,5 +1251,12 @@
     .mint-cell-wrapper {
         padding: 0;
     }
-
+    .isQues{
+        width:40%;
+        display: inline-block;
+    }
+    .status_deal{
+        width: 60%;
+        display: inline-block;
+    }
 </style>

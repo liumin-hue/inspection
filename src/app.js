@@ -60,6 +60,7 @@ import PendingAudit from './audit/PendingAudit.vue'//待稽查
 import PendingDeal from './audit/PendingDeal.vue'//待处理
 import InspectionDetail from './audit/InspectionDetail.vue'//稽查记录详情
 import Inspection from './audit/Inspection.vue'//稽查
+import dealAudit from './audit/dealAudit.vue'//稽查
 // import Inspection from './audit/workOrderReply.vue'//稽查
 import ChangePassword from './audit/changePassword.vue'//修改密码页面
 import ChangeInfo from './audit/changeInfo.vue'//修改信息页面
@@ -122,13 +123,15 @@ var router = new VueRouter({
         { path: "/host", component: Host, meta: { keepAlive: true } },
         { path: '/', redirect: "/login", meta: { keepAlive: false } },
         { path: "/login", component: login, meta: { keepAlive: false } },
-        { path: "/home", component: home, meta: { keepAlive: false } },
+        // { path: "/home", component: home, meta: { keepAlive: false } },
+        { path: "/home", component: home, meta: { keepAlive: true } },
         { path: "/AuditRecord", component: AuditRecord },
         { path: "/Blacklist", component: Blacklist },
         { path: "/PendingAudit", component: PendingAudit },
         { path: "/PendingDeal", component: PendingDeal },
         { path: "/InspectionDetail", component: InspectionDetail },
         { path: "/inspection", component: Inspection },
+        { path: "/dealAudit", component: dealAudit },
         { path: "/audit/changePassword", component: ChangePassword, meta: { keepAlive: false } },
         { path: "/audit/versions", component: Versions, meta: { keepAlive: false } },
         { path: "/audit/changeInfo", component: ChangeInfo, meta: { keepAlive: false } },
@@ -179,6 +182,7 @@ var store = new Vuex.Store({
         // ========================保存版本号
         newVersions: "",
         versions: "",
+        versionAddress:"",//安卓下载地址apk
         //=========================放置公用状态
         count: 1,
         isNewWorkOrder: false,
@@ -285,7 +289,7 @@ new Vue({
 })
 
 // 自定义指令
-import { Toast } from "mint-ui"; //引入mint-ui插件
+import { Toast } from "mint-ui";
 Vue.directive('lfcous', function (el, pra, a) {
     if ($(".mint-field-core").eq(-1).val()) {
         let valueLength = $(".mint-field-core").eq(-1).val().length

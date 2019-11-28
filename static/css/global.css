@@ -249,7 +249,7 @@ input[type='color']{
 .mint-field .mint-cell-title,
 .mint-field .mint-cell-value{
     width:0.7rem;
-    color:#333;
+    color:#232323;
 }
 
 .hostBox .mint-cell .mint-cell-wrapper,
@@ -527,6 +527,7 @@ input[type='color']{
   .delay_time_val .mint-field-core{
     text-align: right;
     font-size: 13px;
+      color: #595959;
   }
   
 
@@ -655,7 +656,7 @@ a{color: #565656;}
     text-align: left;
 }
 .texttitle{
-    color: #333;
+    color: #232323;
 }
 .phone{
     display: inline-block;
@@ -762,7 +763,7 @@ li{
     display: inline-block;
 }
 .status{
-    color: #333;
+    color: #232323;
 }
 .auditer{
     display: inline-block;
@@ -787,13 +788,15 @@ li{
     border-bottom: 2px solid #26a2ff!important;
 }
 .pending_auditnews{
-    border-bottom: 1px solid #EFEFEF;
+    /*border-bottom: 1px solid #EFEFEF;*/
     border-top: 1px solid #EFEFEF;
     background:#fff;
+    color: #232323;
 }
 .content_list{
+    margin-left: 10px;
     border-bottom: 1px solid #E0E0E0;
-    padding: 10px 15px;
+    padding: 10px 5px;
     line-height: 27px;
 }
 .plan_content{

@@ -33,10 +33,10 @@
                 </div>
                 <div class="mui-table-view-cell">
                     <div>处理状态：</div>
-                    <span v-if="ProStatusMeaning==0">{{ProStatusMeaning}}</span><!-- 无问题 -->
-                    <span v-if="ProStatusMeaning==1" style="color:green">{{ProStatusMeaning}}</span><!-- 已处理 -->
-                    <span v-if="ProStatusMeaning==2" style="color:red">{{ProStatusMeaning}}</span><!-- 未处理 -->
-                    <span v-if="ProStatusMeaning==3" style="color:blue">{{ProStatusMeaning}}</span><!-- 待处理 -->
+                    <span v-if="ProStatus==0">{{strProStatus}}</span><!-- 无问题 -->
+                    <span v-if="ProStatus==1" style="color:green">{{strProStatus}}</span><!-- 已处理 -->
+                    <span v-if="ProStatus==2" style="color:red">{{strProStatus}}</span><!-- 未处理 -->
+                    <span v-if="ProStatus==3" style="color:blue">{{strProStatus}}</span><!-- 待处理 -->
                 </div>
                 <div class="mui-table-view-cell">
                     <div>详情：</div>
@@ -46,8 +46,8 @@
                     <div>图片：</div>
                     <span>
                         <!-- {{$data.ImgList}} -->
-                        <div v-for="item in ImgList">
-                            <viewer style="margin: 0;padding: 0;">
+                        <div >
+                            <viewer v-for="item in ImagList" style="margin: 0;padding: 0;">
                                 <img style="width: 15vw;height: 15vw;" :src="item">
                             </viewer>
                         </div>
@@ -75,23 +75,14 @@
                 ContactPhone:"",//电话
                 OperationTime:"",//稽查时间
                 IsProblemMeaning:"",//是否有问题
-                ProStatusMeaning:"",//处理状态
+                ProStatus:"",//处理状态
                 ProblemDes:"",//详情
-                ImgList:[],//图片
+                ImagList:[],//图片
                 SuggestDes:"",//处理意见
+                strProStatus:'',
             };
         },
         mounted() {
-            // if(this.$store.state.reLiDetail.ImgList != ''|| undefined){
-            //     this.ImgList=this.$store.state.reLiDetail.ImgList.forEach(function (item) {
-            //         console.log(this.$store.state.reLiDetail.ImgList)//图片  从上一页传过来的
-            //         return this.$myConfig.host +'/Image/' + item
-            //     })
-            // }
-            // this.ImgList=this.$store.state.reLiDetail.ImgList.forEach(function (item) {    //图片  从上一页传过来的
-                // return this.$myConfig.host +'/Image/' + item
-            // })
-            
             //从上页获取
             var _this = this
             console.log(_this.$store.state.reLiDetail)
@@ -101,7 +92,8 @@
             _this.CusName = _this.$store.state.reLiDetail.CusName;//姓名 从上一页传过来的
             this.OperationTime = _this.$store.state.reLiDetail.OperationTime;//稽查时间  从上一页传过来的
             this.IsProblemMeaning = _this.$store.state.reLiDetail.IsProblem;//是否有问题  从上一页传过来的
-            this.ProStatusMeaning = _this.$store.state.reLiDetail.ProStatus;//处理状态  从上一页传过来的
+            this.strProStatus = _this.$store.state.reLiDetail.strProStatus;//处理状态  从上一页传过来的
+            this.ProStatus = _this.$store.state.reLiDetail.ProStatus;//处理状态  从上一页传过来的  判断处理状态值 来 添加class颜色
             this.ProblemDes = _this.$store.state.reLiDetail.ProStatus;//详情  从上一页传过来的
             this.ImgList = _this.$store.state.reLiDetail.ProStatus;//详情  从上一页传过来的
             this.SuggestDes = _this.$store.state.reLiDetail.ProStatus;//处理意见  从上一页传过来的
@@ -111,7 +103,6 @@
                 .get(this.$myConfig.host + "/Api/InspectionApp/GetInspectionRecDetail", {
                     params: {
                         ID: this.$store.state.reLiDetail.InspectionRecID
-
                     }
                 })
                 .then(
@@ -125,15 +116,27 @@
                             _this.ProStatusMeaning = resInfo.Data.ProStatusMeaning//处理状态
                             _this.ProblemDes = resInfo.Data.ProblemDes//详情
                             _this.SuggestDes = resInfo.Data.SuggestDes//处理意见
+                            var ImgList = []
                             var ImgList = resInfo.Data.ImgList//图片
-                            //图片列表
-                            for(var i = 0;i<ImgList.length;i++){
-                                _this.ImgList[i] = _this.$myConfig.host +"/image/" + ImgList[i]
-                            }
+                            console.log(ImgList)
+                             ImgList.forEach(function (item) {
+                                var imgItem = [_this.$myConfig.host +"/image/" + item]
+                                 console.log('imgitm长度')
+                                 console.log(imgItem.length)
+                                 console.log(imgItem)
+                                 if(imgItem.length<1){
+                                     _this.ImagList=''
+                                 }else if(imgItem.length==1){
+                                     _this.ImagList=imgItem
+                                 }
+                                return imgItem
+                            })
+                            console.log(_this.ImagList)
                         } else {
                             Toast(resInfo.Message);
                         }
                         this.isLoading = false;
+                        console.log(res)
                     },
                     function (err) {
                         Toast("请检查您的网络");
@@ -260,13 +263,14 @@
         width: 25%;
         float: left;
         font-size: 0.14rem;
-        color: #666;
+        color: #232323;
     }
 
     .workOrder > div > span {
         max-width: 70%;
         float: left;
         font-size: 0.14rem;
+        color: #595959;
     }
 
     /* 工单处理按钮 */
@@ -330,4 +334,5 @@
     .valueLength {
         text-align: right;
     }
+
 </style>

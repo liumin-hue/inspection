@@ -14,7 +14,7 @@
                     <!-- <div class="andr_click">1.安卓用户请前往PC端手机版客服扫描二维码更新系统</div> -->
                     <mt-button type="primary" v-if="!isIOS" size="large" @click="andr_click">下载安卓最新版本</mt-button>
                     <!-- <div class="ios" v-if="isIOS">ios用户请于App Store下载更新系统</div> -->
-                    <mt-button type="primary" v-if="isIOS" size="large" @click="ios">下载IOS最新版本</mt-button>
+                    <!-- <mt-button type="primary" v-if="isIOS" size="large" @click="ios">下载IOS最新版本</mt-button> -->
                 </div>
           </div>
       </div>
@@ -31,6 +31,7 @@ export default {
     return {
       oldVersions: "",
       newVersions: "",
+      versionAddress: "",
       isIOS:false,
     };
   },
@@ -39,12 +40,14 @@ export default {
     this.isIOS = this.$store.isIOS
     this.oldVersions = this.$store.versions;
     this.newVersions = this.$store.newVersions;
+    this.versionAddress = this.$store.versionAddress;
   },
   methods: {
     andr_click() {
+      var _this=this;
       plus.nativeUI.toast("正在准备环境，请稍后！");
       let wa = plus.nativeUI.showWaiting();
-      var dtask = plus.downloader.createDownload("http://60.28.142.26:22001/cs/MobileApk/GdkykefuApp.apk", {}, function(
+      var dtask = plus.downloader.createDownload(_this.versionAddress, {}, function(
         d,
         status
       ) {
@@ -59,10 +62,10 @@ export default {
       });
       dtask.start();
     },
-    ios(){
-      var url='https://itunes.apple.com/us/app/%E6%99%BA%E6%85%A7%E4%BE%9B%E7%83%AD%E5%AE%A2%E6%88%B7%E6%9C%8D%E5%8A%A1%E5%B9%B3%E5%8F%B0/id1377068759?l=zh&ls=1&mt=8';// HelloH5应用在appstore的地址
-      plus.runtime.openURL(url);
-    }
+    // ios(){
+    //   var url='https://itunes.apple.com/us/app/%E6%99%BA%E6%85%A7%E4%BE%9B%E7%83%AD%E5%AE%A2%E6%88%B7%E6%9C%8D%E5%8A%A1%E5%B9%B3%E5%8F%B0/id1377068759?l=zh&ls=1&mt=8';// HelloH5应用在appstore的地址
+    //   plus.runtime.openURL(url);
+    // }
   }
 };
 </script>

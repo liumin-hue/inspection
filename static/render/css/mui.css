@@ -775,7 +775,7 @@ p {
     box-sizing: content-box;
     width: 70%;
     min-height: 100%;
-    background: #333;
+    background: #232323;
     -webkit-overflow-scrolling: touch;
 }
 
@@ -794,7 +794,7 @@ p {
 }
 
 .mui-off-canvas-wrap:not(.mui-slide-in).mui-scalable {
-    background-color: #333;
+    background-color: #232323;
 }
 
 .mui-off-canvas-wrap:not(.mui-slide-in).mui-scalable > .mui-off-canvas-left,
@@ -969,7 +969,7 @@ button,
     text-align: center;
     vertical-align: top;
     white-space: nowrap;
-    color: #333;
+    color: #232323;
     border: 1px solid #ccc;
     border-radius: 3px;
     border-top-left-radius: 3px;
@@ -1520,7 +1520,7 @@ input[type='submit'].mui-active:enabled,
     line-height: 1;
     display: inline-block;
     padding: 3px 6px;
-    color: #333;
+    color: #232323;
     border-radius: 100px;
     background-color: rgba(0, 0, 0, .15);
 }
@@ -1759,7 +1759,7 @@ input[type='submit'].mui-active:enabled,
     line-height: 17px;
     margin-bottom: 0;
     margin-left: 44px;
-    color: #333;
+    color: #232323;
 }
 
 .mui-card-header.mui-card-media .mui-media-body p {
@@ -1845,7 +1845,7 @@ input[type='submit'].mui-active:enabled,
 
 .mui-table-view-inverted {
     color: #fff;
-    background: #333;
+    background: #232323;
 }
 
 .mui-table-view-inverted:after {
@@ -2331,7 +2331,7 @@ input[type='submit'].mui-active:enabled,
     height: 15px;
     margin-top: 8px;
     text-overflow: ellipsis;
-    color: #333;
+    color: #232323;
 }
 
 .mui-table-view.mui-grid-view .mui-table-view-cell:before,
@@ -2861,7 +2861,7 @@ select:focus {
     height: 64px;
     text-align: center;
     opacity: .8;
-    color: #333;
+    color: #232323;
     border: 1px solid #ddd;
     border-radius: 6px;
     background-color: #fff;
@@ -2896,7 +2896,7 @@ select:focus {
 
 .mui-search .mui-placeholder .mui-icon {
     font-size: 20px;
-    color: #333;
+    color: #232323;
 }
 
 .mui-search:before {

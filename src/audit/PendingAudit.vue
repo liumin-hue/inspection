@@ -22,7 +22,7 @@
                             <div class="phone"><span class="status">结束日期：</span>{{this.datas.InspectionEndDate}}</div>
                         </div>
                         <div class="model_bottom">
-                            <div class="phone"><span class="status">稽查进度：</span>{{this.datas.InspectionNum}}</div>
+                            <div class="phone"><span class="status">稽查进度：</span>{{this.datas.InspectionComNum}}</div>
                             <div class="phone"><span class="status">未稽查：</span>{{this.datas.UnInspectionNum}}</div>
                         </div>
                     </li>
@@ -48,8 +48,7 @@
                     <li v-for="(item,index) in familyList" class="content_list" @click="House(index)">
                         <router-link to="/inspection">
                             <div class="address">
-                                <div class="status">地址：</div>
-                                <div>{{item.Address}}</div>
+                                <div class="people_name"><span class="status">地址：</span>{{item.Address}}</div>
                             </div>
                             <div class="name_icon">
                             <div class="cusname"><span class="status">姓名：</span>{{item.CusName}}</div>
@@ -132,7 +131,7 @@
                 .get(this.$myConfig.host + '/Api/InspectionApp/GetInpectionPlans', {
                     params: {
                         status: 0,
-                        chargeYear: this.$store.state.CurrentYear,
+                        chargeYear: this.$store.CurrentYear,
                     }
                 })
                 .then(res => {
@@ -158,6 +157,23 @@
                 this.$store.state.inspectionID = this.communityList[0].InspectionID
                 this.CommunityList(0)
                 this.Familyform(index)
+                this.$http
+                    .get(this.$myConfig.host + '/Api/InspectionApp/GetInpectionPlans', {
+                        params: {
+                            status: 0,
+                            chargeYear: this.$store.CurrentYear,
+                        }
+                    })
+                    .then(res => {
+                        res.body.Data.forEach(function (item) {
+                            item.InspectionStartDate = item.InspectionStartDate.substr(0, 10)
+                            item.InspectionEndDate = item.InspectionEndDate.substr(0, 10)
+                        })
+                        this.planlist = res.body.Data
+                        //稽查计划  小区列表
+                        // this.changecolor(index)
+                        // this.datas = this.planlist[index]  //初始话  计划名 和开始日期
+                    })
                 // console.log(this.communityList)  //小区列表信息
             },
             //小区列表
@@ -173,7 +189,6 @@
                     .get(this.$myConfig.host + '/Api/InspectionApp/GetSendJob', {
                         params: {
                             status: 0,
-                            chargeYear: this.$store.state.CurrentYear,
                             InspectionID: this.$store.state.inspectionID,
                             CommunityID: this.$store.state.communityID,
                         }
@@ -194,7 +209,7 @@
                 console.log(this.communityList)
                 console.log(this.familyList)
                 console.log(this.houseList)
-                // console.log(this.$store.state.CurrentYear)
+                // console.log(this.$store.CurrentYear)
             }
         }
     }
@@ -205,6 +220,7 @@
         height: 100%;
         background-color: #fff;
         color: #595959;
+        font-size:13px;
     }
 
     .titlehead {
@@ -224,7 +240,7 @@
 
     .pending_plan > li {
         /*width: 26%;*/
-        font-size: 15px;
+        /*font-size: 15px;*/
         padding: 10px;
         display: inline-block;
         text-align: center;
@@ -248,7 +264,7 @@
     }
 
     .pendinglist {
-        font-size: 10px;
+        /*font-size: 10px;*/
         color: #727272;
         background-color: #F0F0F0;
         text-align: left;
@@ -257,7 +273,7 @@
 
     .pending_listname {
         padding: 10px;
-        font-size: 14px;
+        /*font-size: 14px;*/
     }
 
     .plan_content {
@@ -268,7 +284,7 @@
 
     .eachplan_content {
         width: 77.8%;
-        font-size: 14px;
+        /*font-size: 14px;*/
         color: #333333;
     }
 
@@ -305,11 +321,11 @@
         background:#676767;
     }
     .status_q1{
-        width:0.2rem;
+        width:0.25rem;
         background:#ccc;
     }
     .status_q2{
-        width:0.2rem;
+        width:0.25rem;
         background:#FA6400;
     }
     .status_wg{
@@ -322,7 +338,7 @@
     }
     .name_icon{
         display: flex;
-        font-size:12px ;
+        /*font-size:12px ;*/
         /*flex-wrap: wrap;*/
         justify-content: space-between;
         /*position: absolute;*/

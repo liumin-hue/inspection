@@ -189,7 +189,11 @@ export default {
   },
   methods: {
     goHome() {
-      if (this.username == "" || this.password == "") {
+      if (this.username == "") {
+        Toast("用户名不能为空");
+      } else if (this.password == "") {
+        Toast("密码不能为空");
+      } else if (this.username == "" || this.password == "") {
         Toast("用户名和密码不能为空");
       } else {
         try {
@@ -223,10 +227,10 @@ export default {
             function(err) {
               if (/(iPhone|iPad|iPod|iOS)/i.test(navigator.userAgent)) {
                 console.log("This is iOS'browser."); //这是iOS平台下浏览器
-                Toast(resInfo.Message);
+                Toast("请检查您的网络或重新填写服务器地址");
                 this.isIOS = true
               } else {
-                Toast(resInfo.Message);
+                Toast("请检查您的网络");
               }
             }
           );

@@ -3,6 +3,7 @@
         <mt-header fixed :title="tab_selected"></mt-header>
         <!-- 首页主体框架 -->
         <div class="page-wrap">
+            <!-- {{$data.versions}} -->
             <!-- tabcontainer -->
             <mt-tab-container class="page-tabbar-container" v-model="tab_selected">
                 <!-- 首页 -->
@@ -111,9 +112,6 @@
             <mt-tab-item id="首页" :class="tab_selected == '设置' ? 'choosed' : ''">
                 <div :class="tab_selected == '首页' ? 'choosed' : ''">
                     <span class="home_icon icons"></span>
-                    <mt-badge size="small" type="error" v-show="toAccept + workOrderPoolNew == 0 ? false : true">
-                        {{toAccept + workOrderPoolNew}}
-                    </mt-badge>
                 </div>
                 首页
             </mt-tab-item>
@@ -143,191 +141,160 @@
         data() {
             return {
                 UserName:"",//顶部问候语中的用户名
-                InspectionPlanNum:"",
-                InspectionNum:"",
-                InspectionCompleteNum:"",
-                WaitInspectionNum:"",
-                WaitProcessedNum:"",
-                InspectionRecNum:"",
-                BlackListNum:"",
+                InspectionPlanNum:"",//共有稽查计划
+                InspectionNum:"",//当前共有稽查单
+                InspectionCompleteNum:"",//已完成稽查单
+                WaitInspectionNum:"",//待稽查
+                WaitProcessedNum:"",//待处理
+                InspectionRecNum:"",//稽查记录
+                BlackListNum:"",//黑名单
 
                 tab_selected: "首页",
-                toAccept: 0,
-                workOrderPoolNew: 0,
-                isLoading: false,
-                versions: false,
-                oldVersions: "1.0.0"
+                //toAccept: 0,
+                //workOrderPoolNew: 0,
+                isLoading: false,//载入动画
+                versions: false,//是否提示有新版本
+                oldVersions: "3.0.1"//旧版本号
             };
         },
         props: {},
         watch: {
             tab_selected: function (val, oldVal) {
-                // console.log(val);
-                // if (val === "GIS") {
-                //     this.isLoading = true;
-                //     let _this = this;
-                //     setTimeout(function () {
-                //         _this.isLoading = false;
-                //     }, 1000);
-                //     this.loadmap(); //加载地图和相关组件
-                // }
+                console.log(val);
+                if (val === "首页") {
+                    this.isLoading = true;
+                    let _this = this;
+                    setTimeout(function () {
+                        _this.isLoading = false;
+                    }, 1000);
+                    this.getHomeData(); //获取首页数据统计
+                }
             }
         },
         mounted() {
             var _this = this;
-
-            //获取首页数据统计
-            this.$http
-                .get(this.$myConfig.host + "/Api/InspectionApp/GetFirstPageData")
-                .then(
-                    function (res) {
-                        let resInfo = $.parseJSON(res.bodyText);
-                        this.$store.state.CurrentYear = resInfo.Data.CurrentYear
-                        if (resInfo.IsSuccess) {
-                            _this.UserName=resInfo.Data.UserName;
-                            _this.InspectionPlanNum=resInfo.Data.InspectionPlanNum;
-                            _this.InspectionNum=resInfo.Data.InspectionNum;
-                            _this.InspectionCompleteNum=resInfo.Data.InspectionCompleteNum;
-                            _this.WaitInspectionNum=resInfo.Data.WaitInspectionNum;
-                            _this.WaitProcessedNum=resInfo.Data.WaitProcessedNum;
-                            _this.InspectionRecNum=resInfo.Data.InspectionRecNum;
-                            _this.BlackListNum=resInfo.Data.BlackListNum;
-                           
-                        } else {
-                            Toast(resInfo.Message);
-                        }
-                        this.$store.state.loginInfo = resInfo.Data
-                        console.log('home首页')
-                        console.log(resInfo)
-                        // console.log(_this.InspectionNum)
-                        console.log(this.$store.state.loginInfo)
-                    },
-                    function (err) {
-                        Toast("请检查您的网络");
-                    }
-                );
-
+            // 保存手机版本号
+            this.$store.versions = this.oldVersions
+            console.log(this.$store.versions)
+            this.getHomeData();//获取首页数据统计
         },
         //判断跳转路径
-        beforeRouteEnter: (to, from, next) => {
-            //获取当前页面
-            var thisPage = to.matched[0].instances.default;
-            //根据跳转前路径清空新工单
-            if (from.name == "ToAccept") {
-                // console.log("from.name")
-                thisPage.toAccept = 0;
-                try {
-                    plus.storage.setItem(
-                        "gdky_myWorkOrderTime",
-                        thisPage.formatDate(new Date(), "yyyy-MM-dd hh:mm:ss")
-                    ); //我的工单退出时间注册
-                } catch (e) {
-                }
-            } else if (from.name == "WorkOrderPond") {
-                thisPage.workOrderPoolNew = 0;
-                try {
-                    plus.storage.setItem(
-                        "gdky_workOrderPoolTime",
-                        thisPage.formatDate(new Date(), "yyyy-MM-dd hh:mm:ss")
-                    ); //工单池退出时间注册
-                } catch (e) {
-                }
-            }
-            source = from.name;
-            // console.log(source);
-            next();
-        },
+        // beforeRouteEnter: (to, from, next) => {
+        //     //获取当前页面
+        //     var thisPage = to.matched[0].instances.default;
+        //     //根据跳转前路径清空新工单
+        //     if (from.name == "ToAccept") {
+        //         // console.log("from.name")
+        //         thisPage.toAccept = 0;
+        //         try {
+        //             plus.storage.setItem(
+        //                 "gdky_myWorkOrderTime",
+        //                 thisPage.formatDate(new Date(), "yyyy-MM-dd hh:mm:ss")
+        //             ); //我的工单退出时间注册
+        //         } catch (e) {
+        //         }
+        //     } else if (from.name == "WorkOrderPond") {
+        //         thisPage.workOrderPoolNew = 0;
+        //         try {
+        //             plus.storage.setItem(
+        //                 "gdky_workOrderPoolTime",
+        //                 thisPage.formatDate(new Date(), "yyyy-MM-dd hh:mm:ss")
+        //             ); //工单池退出时间注册
+        //         } catch (e) {
+        //         }
+        //     }
+        //     source = from.name;
+        //      console.log(source);
+        //     next();
+        // },
         activated() {
-            var _this = this;
-
-            // 保存手机版本号
-            this.$store.versions = this.oldVersions;
+            this.getHomeData();
             //获取手机cid
-            try {
-                var info = plus.push.getClientInfo();
-                //计时器获取cid
-                var timer = setInterval(function () {
-                    if (info.clientid == "") {
-                        info = plus.push.getClientInfo();
-                        // console.log("获取cid失败");
-                        return false;
-                    } else {
-                        plus.storage.setItem("gdkykf_clientid", info.clientid); //注册手机cid
-                        //更新cid
-                        _this.$http
-                            .post(
-                                _this.$myConfig.host +
-                                "/api/UserLogin/PostUpdateClientIDByUserID",
-                                {
-                                    UserID: _this.$store.UserInfo.UserID,
-                                    ClientID: info.clientid
-                                },
-                                {emulateJSON: true}
-                            )
-                            .then(
-                                function (res) {
-                                    let resInfo = $.parseJSON(res.bodyText);
-                                    //判断登录信息
-                                    if (resInfo.ReturnResult) {
-                                        // Toast("获取cid成功");
-                                        // console.log(info.clientid);
-                                    } else {
-                                        Toast(resInfo.Message);
-                                    }
-                                },
-                                function (err) {
-                                    Toast("请检查您的网络");
-                                }
-                            );
-                        clearInterval(timer);
-                        // console.log("获取cid成功");
-                    }
-                }, 50);
-            } catch (e) {
-            }
+            // try {
+            //     var info = plus.push.getClientInfo();
+            //     //计时器获取cid
+            //     var timer = setInterval(function () {
+            //         if (info.clientid == "") {
+            //             info = plus.push.getClientInfo();
+            //             // console.log("获取cid失败");
+            //             return false;
+            //         } else {
+            //             plus.storage.setItem("gdkykf_clientid", info.clientid); //注册手机cid
+            //             //更新cid
+            //             _this.$http
+            //                 .post(
+            //                     _this.$myConfig.host +
+            //                     "/api/UserLogin/PostUpdateClientIDByUserID",
+            //                     {
+            //                         UserID: _this.$store.UserInfo.UserID,
+            //                         ClientID: info.clientid
+            //                     },
+            //                     {emulateJSON: true}
+            //                 )
+            //                 .then(
+            //                     function (res) {
+            //                         let resInfo = $.parseJSON(res.bodyText);
+            //                         //判断登录信息
+            //                         if (resInfo.ReturnResult) {
+            //                             // Toast("获取cid成功");
+            //                             // console.log(info.clientid);
+            //                         } else {
+            //                             Toast(resInfo.Message);
+            //                         }
+            //                     },
+            //                     function (err) {
+            //                         Toast("请检查您的网络");
+            //                     }
+            //                 );
+            //             clearInterval(timer);
+            //             // console.log("获取cid成功");
+            //         }
+            //     }, 50);
+            // } catch (e) {
+            // }
             // 挂载首页时查看新工单
-            try {
-                var MyWorkOrderTime = plus.storage.getItem("gdky_myWorkOrderTime");
-                var WorkOrderPoolTime = plus.storage.getItem("gdky_workOrderPoolTime");
-            } catch (e) {
-                var MyWorkOrderTime = "";
-                var WorkOrderPoolTime = "";
-            }
+            // try {
+            //     var MyWorkOrderTime = plus.storage.getItem("gdky_myWorkOrderTime");
+            //     var WorkOrderPoolTime = plus.storage.getItem("gdky_workOrderPoolTime");
+            // } catch (e) {
+            //     var MyWorkOrderTime = "";
+            //     var WorkOrderPoolTime = "";
+            // }
             // 获取用户工单信息
-            this.$http
-                .get(this.$myConfig.host + "/api/UserLogin/GetMountPrepareConditions", {
-                    params: {
-                        UserID: this.$store.UserInfo.UserID,
-                        MyWorkOrderTime: MyWorkOrderTime, // plus.storage.getItem(gdky_myWorkOrderTime)====>获取点击我的工单退出时间
-                        WorkOrderPoolTime: WorkOrderPoolTime // plus.storage.getItem(gdky_workOrderPoolTime)====>获取点击我的工单退出时间
-                    }
-                })
-                .then(
-                    function (res) {
-                        let resInfo = $.parseJSON(res.bodyText);
-                        // console.log(resInfo);
-                        if (resInfo.ReturnResult) {
-                            // console.log(resInfo.AppVersionName.split('.').join('') , resInfo.AppVersionName.split('.').join(''))
-                            // 判断版本号
-                            if (resInfo.AppVersionName.split('.').join('') > this.$store.versions.split('.').join('')) {
-                                this.versions = true
-                                this.$store.newVersions = resInfo.AppVersionName
-                            } else {
-                                this.versions = false
-                            }
-                            _this.$store.toAcceptNew = resInfo.WaitReceptionBillsCounts;
-                            _this.$store.workOrderPoolNew = resInfo.WorkOrderPoolPrompCounts;
-                            //新工单赋值
-                            this.toAccept = this.$store.toAcceptNew;
-                            this.workOrderPoolNew = this.$store.workOrderPoolNew;
-                        } else {
-                            Toast(resInfo.Message);
-                        }
-                    },
-                    function (err) {
-                        Toast("请检查您的网络");
-                    }
-                );
+            // this.$http
+            //     .get(this.$myConfig.host + "/api/UserLogin/GetMountPrepareConditions", {
+            //         params: {
+            //             UserID: this.$store.UserInfo.UserID,
+            //             MyWorkOrderTime: MyWorkOrderTime, // plus.storage.getItem(gdky_myWorkOrderTime)====>获取点击我的工单退出时间
+            //             WorkOrderPoolTime: WorkOrderPoolTime // plus.storage.getItem(gdky_workOrderPoolTime)====>获取点击我的工单退出时间
+            //         }
+            //     })
+            //     .then(
+            //         function (res) {
+            //             let resInfo = $.parseJSON(res.bodyText);
+            //             // console.log(resInfo);
+            //             if (resInfo.ReturnResult) {
+            //                 // console.log(resInfo.AppVersionName.split('.').join('') , resInfo.AppVersionName.split('.').join(''))
+            //                 // 判断版本号
+            //                 if (resInfo.AppVersionName.split('.').join('') > this.$store.versions.split('.').join('')) {
+            //                     this.versions = true
+            //                     this.$store.newVersions = resInfo.AppVersionName
+            //                 } else {
+            //                     this.versions = false
+            //                 }
+            //                 _this.$store.toAcceptNew = resInfo.WaitReceptionBillsCounts;
+            //                 _this.$store.workOrderPoolNew = resInfo.WorkOrderPoolPrompCounts;
+            //                 //新工单赋值
+            //                 this.toAccept = this.$store.toAcceptNew;
+            //                 this.workOrderPoolNew = this.$store.workOrderPoolNew;
+            //             } else {
+            //                 Toast(resInfo.Message);
+            //             }
+            //         },
+            //         function (err) {
+            //             Toast("请检查您的网络");
+            //         }
+            //     );
             // 判断路由跳转
             if (this.$store.isLogin) {
                 //this.loadmap(); //加载地图和相关组件
@@ -337,83 +304,128 @@
             // console.log(this.$store.state.isNewWorkOrder);
 
             //获取用户权限
-            this.$http
-                .get(this.$myConfig.host + "/api/UserLogin/GetPrepareConditions", {
-                    params: {
-                        UserID: this.$store.UserInfo.UserID
-                    }
-                })
-                .then(
-                    function (res) {
-                        let resInfo = $.parseJSON(res.bodyText);
-                        //判断登录信息
-                        if (resInfo.ReturnResult) {
-                            // console.log(resInfo.Permisions);
-                            for (let i = 0; i < resInfo.Permisions.length; i++) {
-                                if (resInfo.Permisions[i] == "gdqrfp") {
-                                    this.$store.assign = true;
-                                    break;
-                                } else {
-                                    this.$store.assign = false;
-                                    continue;
-                                }
-                            }
-                            //保存用户权限
-                            _this.$store.Permisions = resInfo.Permisions;
-                        } else {
-                            Toast(resInfo.Message);
-                        }
-                    },
-                    function (err) {
-                        Toast(resInfo.Message);
-                    }
-                );
+            // this.$http
+            //     .get(this.$myConfig.host + "/api/UserLogin/GetPrepareConditions", {
+            //         params: {
+            //             UserID: this.$store.UserInfo.UserID
+            //         }
+            //     })
+            //     .then(
+            //         function (res) {
+            //             let resInfo = $.parseJSON(res.bodyText);
+            //             //判断登录信息
+            //             if (resInfo.ReturnResult) {
+            //                 // console.log(resInfo.Permisions);
+            //                 for (let i = 0; i < resInfo.Permisions.length; i++) {
+            //                     if (resInfo.Permisions[i] == "gdqrfp") {
+            //                         this.$store.assign = true;
+            //                         break;
+            //                     } else {
+            //                         this.$store.assign = false;
+            //                         continue;
+            //                     }
+            //                 }
+            //                 //保存用户权限
+            //                 _this.$store.Permisions = resInfo.Permisions;
+            //             } else {
+            //                 Toast(resInfo.Message);
+            //             }
+            //         },
+            //         function (err) {
+            //             Toast("请检查您的网络");
+            //         }
+            //     );
         },
         deactivated() {
         },
         methods: {
+            getHomeData(){
+                var _this = this;
+
+                //获取首页数据统计
+                this.$http
+                    .get(this.$myConfig.host + "/Api/InspectionApp/GetFirstPageData")
+                    .then(
+                        function (res) {
+                            let resInfo = $.parseJSON(res.bodyText);
+
+                            if (resInfo.IsSuccess) {
+                                _this.UserName=resInfo.Data.UserName;
+                                _this.InspectionPlanNum=resInfo.Data.InspectionPlanNum;
+                                _this.InspectionNum=resInfo.Data.InspectionNum;
+                                _this.InspectionCompleteNum=resInfo.Data.InspectionCompleteNum;
+                                _this.WaitInspectionNum=resInfo.Data.WaitInspectionNum;
+                                _this.WaitProcessedNum=resInfo.Data.WaitProcessedNum;
+                                _this.InspectionRecNum=resInfo.Data.InspectionRecNum;
+                                _this.BlackListNum=resInfo.Data.BlackListNum;
+
+                                _this.$store.CurrentYear=resInfo.Data.CurrentYear;//当前年度
+                                _this.$store.versionAddress=resInfo.Data.VersionAddress;//安卓下载地址apk
+                                
+                                var Version=resInfo.Data.Version
+                                var oldVersions=_this.$store.versions
+
+                                // 判断版本号，新老版本号比较
+                                if (Version.split('.').join('') > oldVersions.split('.').join('')) {
+                                    _this.versions = true
+                                    _this.$store.newVersions = Version
+                                } else {
+                                    _this.versions = false
+                                }
+                            
+                            } else {
+                                Toast(resInfo.Message);
+                            }
+                        },
+                        function (err) {
+                            Toast("请检查您的网络");
+                        }
+                    );
+
+
+            },
             //退出按钮------------------------------------------修改不走接口，直接清除UseID，跳转到登录页 hjw
             quit() {
                 MessageBox.confirm("是否退出当前登录")
                     .then(action => {
-                        try {
-                            // console.log(plus);
-                            let UserID = this.$store.UserInfo.UserID + "";
-                            //注销请求ajax
-                            this.$http
-                                .post(
-                                    this.$myConfig.host + "/api/UserLogin/RemoveMobileUserLogin",
-                                    {
-                                        "": UserID
-                                    },
-                                    {emulateJSON: true}
-                                )
-                                .then(
-                                    function (res) {
-                                        var resInfo = $.parseJSON(res.bodyText);
-                                        //判断登录信息
-                                        if (resInfo.ReturnResult) {
-                                            //清空用户数据
-                                            plus.storage.removeItem("gdky_myWorkOrderTime");
-                                            plus.storage.removeItem("gdky_workOrderPoolTime");
-                                            //提示信息
-                                            Toast("用户注销成功");
-                                            //跳转登录页面
-                                            this.$router.push({path: '/login'});
-                                        } else {
-                                            Toast(resInfo.Message);
-                                        }
-                                    },
-                                    function (err) {
-                                        Toast("请检查您的网络");
-                                    }
-                                );
-                        } catch (e) {
-                            //提示信息
-                            Toast("用户注销成功");
-                            //跳转登录页面
-                            this.$router.push({path: "/"});
-                        }
+                        // try {
+                        //     // console.log(plus);
+                        //     let UserID = this.$store.UserInfo.UserID + "";
+                        //     //注销请求ajax
+                        //     this.$http
+                        //         .post(
+                        //             this.$myConfig.host + "/api/UserLogin/RemoveMobileUserLogin",
+                        //             {
+                        //                 "": UserID
+                        //             },
+                        //             {emulateJSON: true}
+                        //         )
+                        //         .then(
+                        //             function (res) {
+                        //                 var resInfo = $.parseJSON(res.bodyText);
+                        //                 //判断登录信息
+                        //                 if (resInfo.ReturnResult) {
+                        //                     //清空用户数据
+                        //                     plus.storage.removeItem("gdky_myWorkOrderTime");
+                        //                     plus.storage.removeItem("gdky_workOrderPoolTime");
+                        //                     //提示信息
+                        //                     Toast("用户注销成功");
+                        //                     //跳转登录页面
+                        //                     this.$router.push({path: "/auditlogin"});
+                        //                 } else {
+                        //                     Toast(resInfo.Message);
+                        //                 }
+                        //             },
+                        //             function (err) {
+                        //                 Toast("请检查您的网络");
+                        //             }
+                        //         );
+                        // } catch (e) {
+                        //     //提示信息
+                        //     Toast("用户注销成功");
+                        //     //跳转登录页面
+                             this.$router.push({path: "/login"});
+                        // }
                     })
                     .catch(() => {
                         console.log("取消");
@@ -455,7 +467,7 @@
     }
     .welcome_text{
         margin-top:0.15rem;
-        color:#333;
+        color:#232323;
         font-size: 0.14rem;
         padding:0.09rem 0.15rem;
         line-height: 0.3rem;
@@ -513,7 +525,7 @@
             margin-right:0.06rem
         }
         .home_btn{
-            height:0.8rem;
+            height:0.86rem;
             margin:0.1rem 0.2rem;
             line-height:0.8rem;
             color:#fff;
@@ -623,7 +635,7 @@
         }
 
         .home_btn{
-            height:0.8rem;
+            height:0.86rem;
             margin:0.1rem 0.2rem;
             line-height:0.8rem;
             color:#fff;

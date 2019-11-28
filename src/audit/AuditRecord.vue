@@ -36,14 +36,14 @@
                     </div>
                     <div class="people_name"><span class="status">地址：</span>{{item.Address}}</div>
                     <div class="model_bottom">
-                        <div class="name"><span class="nametext"><span
+                        <div class="isQues"><span class="ques"><span
                                 class="texttitle">姓名：</span>{{item.CusName}}</span></div>
-                        <div class="phone"><span class="texttitle">稽查时间：</span>{{item.InspectionTime}}</div>
+                        <div class="status_deal"><span class="texttitle">稽查时间：</span>{{item.InspectionTime}}</div>
                     </div>
                     <div class="model_bottom">
-                        <div class="name"><span class="nametext"><span class="texttitle">是否有问题：</span>{{item.strIsProblem}}</span>
+                        <div class="isQues"><span class="ques"><span class="texttitle">是否有问题：</span>{{item.strIsProblem}}</span>
                         </div>
-                        <div class="phone"><span class="texttitle">处理状态：</span>{{item.strIsProblem}}</div>
+                        <div class="status_deal"><span class="texttitle">处理状态：</span>{{item.strProStatus}}</div>
                     </div>
                 </li>
             </router-link>
@@ -81,8 +81,8 @@
                 planlist: ["稽查计划", "地址"],  //map 数组datas 接收稽查计划名
                 searchIf:'', //搜索条件
                 searchques:'',
-                noques:1,
-                yesques:2,
+                noques:2,
+                yesques:1,
                 allques:'',
                 planName:'',
                 searchadd:'',
@@ -159,7 +159,7 @@
                 this.$http
                     .get(this.$myConfig.host + '/Api/InspectionApp/GetAppInspectionRecList',{
                         params:{
-                            CurrentYear:this.$store.state.CurrentYear,
+                            CurrentYear:this.$store.CurrentYear,
                             CusID:'',
                             PlanName:this.planName,
                             CommunityName:this.searchadd ,
@@ -168,8 +168,9 @@
                     })
                     .then(res=> {
                         res.body.Data.forEach(function (item) {
-                            item.InspectionTime = item.InspectionTime.substr(0,10)
+                            item.InspectionTime = item.InspectionTime.substr(0,10) +' '+ item.InspectionTime.substr(11,8)
                         })
+                        console.log(res.body.Data)
                         console.log(this.SourcePath)
                         console.log(this.planName)
                         console.log(this.searchadd)
@@ -202,4 +203,17 @@
 .datas{
     margin-bottom: 50px;
 }
+.plan{
+    color:#232323;
+    font-size: 15px;
+    font-weight: bold;
+}
+    .isQues{
+        width:40%;
+        display: inline-block;
+    }
+    .status_deal{
+        width: 60%;
+        display: inline-block;
+    }
 </style>

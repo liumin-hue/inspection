@@ -17,6 +17,25 @@
             <img slot="icon" src="../../static/images/audit/record/updata.png" class="img_bolt">
         </mt-cell>
             <mt-button to="/login" size="large" class="quit" @click="quit">安全退出</mt-button>
+
+        <mt-tabbar v-model="selected" style="position: fixed;bottom:-1px">
+            <div class="foo">
+                <router-link to="/home">
+                    <mt-tab-item id="首页">s
+                        <img slot="icon" src="../../static/images/audit/record/home.png">
+                        首页
+                    </mt-tab-item>
+                </router-link>
+            </div>
+            <div class="foo">
+                <router-link to="/audit/changeInfo">
+                    <mt-tab-item id="设置">
+                        <img slot="icon" src="../../static/images/audit/record/set.png">
+                        设置
+                    </mt-tab-item>
+                </router-link>
+            </div>
+        </mt-tabbar>
     </div>
 </template>
 <script>
@@ -122,8 +141,8 @@
                         //     //提示信息
                         //     Toast("用户注销成功");
                         //     //跳转登录页面
-                        this.$router.push({path: "/audit/login"});
-                        //}
+                        this.$router.push({path: "/login"});
+                        // }
                     })
                     .catch(() => {
                         console.log("取消");

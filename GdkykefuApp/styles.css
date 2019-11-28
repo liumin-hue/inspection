@@ -2528,7 +2528,7 @@ p {
     box-sizing: content-box;
     width: 70%;
     min-height: 100%;
-    background: #333;
+    background: #232323;
     -webkit-overflow-scrolling: touch;
 }
 
@@ -2546,7 +2546,7 @@ p {
 }
 
 .mui-off-canvas-wrap:not(.mui-slide-in).mui-scalable {
-    background-color: #333;
+    background-color: #232323;
 }
 
 .mui-off-canvas-wrap:not(.mui-slide-in).mui-scalable > .mui-off-canvas-left,
@@ -2668,7 +2668,7 @@ button,
     text-align: center;
     vertical-align: top;
     white-space: nowrap;
-    color: #333;
+    color: #232323;
     border: 1px solid #ccc;
     border-radius: 3px;
     border-top-left-radius: 3px;
@@ -3216,7 +3216,7 @@ input[type='submit'].mui-active:enabled,
     line-height: 1;
     display: inline-block;
     padding: 3px 6px;
-    color: #333;
+    color: #232323;
     border-radius: 100px;
     background-color: rgba(0, 0, 0, .15);
 }
@@ -3447,7 +3447,7 @@ input[type='submit'].mui-active:enabled,
     line-height: 17px;
     margin-bottom: 0;
     margin-left: 44px;
-    color: #333;
+    color: #232323;
 }
 
 .mui-card-header.mui-card-media .mui-media-body p {
@@ -3531,7 +3531,7 @@ input[type='submit'].mui-active:enabled,
 
 .mui-table-view-inverted {
     color: #fff;
-    background: #333;
+    background: #232323;
 }
 
 .mui-table-view-inverted:after {
@@ -3996,7 +3996,7 @@ input[type='submit'].mui-active:enabled,
     height: 15px;
     margin-top: 8px;
     text-overflow: ellipsis;
-    color: #333;
+    color: #232323;
 }
 
 .mui-table-view.mui-grid-view .mui-table-view-cell:before,
@@ -4521,7 +4521,7 @@ select:focus {
     height: 64px;
     text-align: center;
     opacity: .8;
-    color: #333;
+    color: #232323;
     border: 1px solid #ddd;
     border-radius: 6px;
     background-color: #fff;
@@ -4556,7 +4556,7 @@ select:focus {
 
 .mui-search .mui-placeholder .mui-icon {
     font-size: 20px;
-    color: #333;
+    color: #232323;
 }
 
 .mui-search:before {
@@ -6350,6 +6350,7 @@ html,body,#big-box{
     width:100%;
     height:100%;
     background-color: #F9F9F9;
+    /*font-size: 13px!important;*/
 }
 
 body.err{
@@ -6366,6 +6367,7 @@ body.err{
 #big-box{
     padding-top: 0.44rem;
     position: relative;
+
 }
 
 /* 防止页面闪动 */
@@ -6568,7 +6570,7 @@ input[type='color']{
 .mint-field .mint-cell-title,
 .mint-field .mint-cell-value{
     width:0.7rem;
-    color:#333;
+    color:#232323;
 }
 
 .hostBox .mint-cell .mint-cell-wrapper,
@@ -6592,7 +6594,7 @@ input[type='color']{
 /* cell样式 */
 #info_body .mint-cell-wrapper,
 #setting_info .mint-cell-wrapper{
-    font-size: 0.14rem;
+    font-size: 0.13rem;
     background-image: none;
   }
 
@@ -6601,7 +6603,7 @@ input[type='color']{
   }
 
   .mint-cell-wrapper{
-    font-size: 0.14rem;
+    font-size: 0.13rem;
 }
 
 
@@ -6845,7 +6847,8 @@ input[type='color']{
   
   .delay_time_val .mint-field-core{
     text-align: right;
-    font-size: 16px;
+    font-size: 13px;
+      color: #595959;
   }
   
 
@@ -6979,7 +6982,7 @@ a{color: #565656;}
     text-align: left;
 }
 .texttitle{
-    color: #333;
+    color: #232323;
 }
 .phone{
     display: inline-block;
@@ -7093,7 +7096,7 @@ li{
     display: inline-block;
 }
 .status{
-    color: #333;
+    color: #232323;
 }
 .auditer{
     display: inline-block;
@@ -7118,17 +7121,16 @@ li{
     border-bottom: 2px solid #26a2ff!important;
 }
 .pending_auditnews{
-
-    border-bottom: 1px solid #EFEFEF;
+    /*border-bottom: 1px solid #EFEFEF;*/
     border-top: 1px solid #EFEFEF;
     background:#fff;
+    color: #232323;
 }
 .content_list{
+    margin-left: 10px;
     border-bottom: 1px solid #E0E0E0;
-    padding: 10px 15px;
-    /*font-size: 12px;*/
-    /*height: 82px;*/
-    line-height: 30px;
+    padding: 10px 5px;
+    line-height: 27px;
 }
 .plan_content{
     margin-bottom:53px;

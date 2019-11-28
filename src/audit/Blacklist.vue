@@ -14,18 +14,16 @@
         </div>
         <div style="height: 100px"></div>
         <ul class="datas">
-            <router-link to="/InspectionDetail">
                 <li v-for="(item,index) in datas" :key="index" class="bolt_argument" @click="auditDetail(index)">
                     <div class="people_name"><span class="status">地址：</span>{{item.Address}}</div>
                     <div class="people_name"><span class="status">姓名：</span>{{item.CusName}}</div>
                     <div class="model_bottom">
                         <div class="name"><span class="nametext"><span class="texttitle">黑名单性质：</span>{{item.strBlackType}}</span>
                         </div>
-                        <div class="phone"><span class="texttitle">操作人：</span>{{userName}}</div>
+                        <div class="phone"><span class="texttitle">操作人：</span>{{item.CreatorName}}</div>
                     </div>
                     <div class="people_name"><span class="status">黑名单备注：</span>{{item.Remark}}</div>
                 </li>
-            </router-link>
         </ul>
         <!--  底部tab      -->
         <mt-tabbar v-model="selected" style="position: fixed;bottom: 0">

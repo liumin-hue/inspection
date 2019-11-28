@@ -47,7 +47,7 @@
             <div class="eachplan_content">
                 <ul>
                     <li v-for="(item,index) in familyList" class="content_list" @click="House(index)">
-                        <router-link to="/inspection">
+                        <router-link to="/dealAudit">
                             <div class="address">
                                 <div class="status">地址：</div>
                                 <div>{{item.Address}}</div>
@@ -116,7 +116,7 @@
                 .get(this.$myConfig.host + '/Api/InspectionApp/GetInpectionPlans', {
                     params: {
                         status: 1,
-                        chargeYear: this.$store.state.CurrentYear,
+                        chargeYear: this.$store.CurrentYear,
                     }
                 })
                 .then(res => {
@@ -128,12 +128,9 @@
                     //稽查计划  小区列表
                     this.changecolor(0)
                     this.datas = this.planlist[0]   //初始话  计划名 和开始日期
-                    // return this.planlist
                 })
             console.log(this.planlist)
-            // if (this.planlist==''){
-            //     Toast('没有待处理工单')
-            // }
+
             this.$store.state.datas = this.datas
         },
         methods: {
@@ -162,14 +159,12 @@
                     .get(this.$myConfig.host + '/Api/InspectionApp/GetSendJob', {
                         params: {
                             status: 1,
-                            chargeYear: '2019-2020',
                             InspectionID: this.$store.state.inspectionID,
                             CommunityID: this.$store.state.communityID,
-                            page: 1,
-                            pageSize: 10
                         }
                     })
                     .then(res => {
+                        console.log(res)
                         var _this = this
                         this.familyList = res.body.Data
                         // console.log(this.familyList)
@@ -193,6 +188,7 @@
         height: 100%;
         background-color: #fff;
         color: #595959;
+        font-size: 13px;
     }
 
     .titlehead {
@@ -212,7 +208,7 @@
 
     .pending_plan > li {
         /*width: 26%;*/
-        font-size: 15px;
+        /*font-size: 15px;*/
         padding: 10px;
         display: inline-block;
         text-align: center;
@@ -236,7 +232,7 @@
     }
 
     .pendinglist {
-        font-size: 10px;
+        /*font-size: 10px;*/
         color: #727272;
         background-color: #F0F0F0;
         text-align: left;
@@ -245,7 +241,7 @@
 
     .pending_listname {
         padding: 10px;
-        font-size: 14px;
+        /*font-size: 14px;*/
     }
 
     .plan_content {
@@ -256,7 +252,7 @@
 
     .eachplan_content {
         width: 77.8%;
-        font-size: 14px;
+        /*font-size: 14px;*/
         color: #333333;
     }
 
@@ -306,7 +302,7 @@
     }
     .name_icon{
         display: flex;
-        font-size:12px ;
+        /*font-size:12px ;*/
         /*flex-wrap: wrap;*/
         justify-content: space-between;
         /*position: absolute;*/

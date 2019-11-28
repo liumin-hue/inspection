@@ -1,8 +1,9 @@
 <template>
   <div id="big-box">
       <mt-header fixed title="密码修改">
-           <mt-button icon="back" slot="left" @click="goback"></mt-button>
+          <mt-button icon="back" slot="left" @click="back"></mt-button>
       </mt-header>
+
       <div id="info_body">
         <div class="input_test">
             <mt-field class="mui-table-view-cell" label="原密码" placeholder="请输入原密码" v-model="OldPassword"></mt-field>
@@ -28,10 +29,10 @@ export default {
     };
   },
   methods: {
-      goback(){
-          this.$router.go(-1);
-      },
-      confirm: function() {
+    back(){
+        this.$router.go(-1)
+    },
+    confirm: function() {
       this.isLoading = true
       var _this = this;
       //判断密码输入
@@ -44,13 +45,13 @@ export default {
       } else if (this.NewPasword !== this.NewPaswordAgain) {
         Toast("两次密码输入不一致");
       } else {
-        MessageBox.confirm("确定保存设置?").then(action => {          
+        MessageBox.confirm("确定保存设置?").then(action => {
           //修改密码接口
           this.$http
-              .get(
-                  this.$myConfig.host + "/api/UserLogin/ChangeUserPassword?OldPassword="+this.OldPassword+"&NewPasword="+this.NewPasword,
-                  { emulateJSON: true }
-              )
+            .get(
+              this.$myConfig.host + "/api/UserLogin/ChangeUserPassword?OldPassword="+this.OldPassword+"&NewPasword="+this.NewPasword,
+              { emulateJSON: true }
+            )
             .then(
               function(res) {
                 var resInfo = $.parseJSON(res.bodyText);

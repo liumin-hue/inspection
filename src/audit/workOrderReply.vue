@@ -503,7 +503,7 @@ export default {
 .mui-table-view-cell > span {
   float: right;
   max-width: 75%;
-  color: #333;
+  color: #232323;
 }
 
 .mui-icon {
