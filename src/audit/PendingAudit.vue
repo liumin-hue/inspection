@@ -88,13 +88,20 @@
                     </router-link>
                 </div>
                 <div class="foo">
-                    <router-link to="/audit/changeInfo">
+                    <router-link :to="{name:'home',query:{id:'设置'}}">
                         <mt-tab-item id="设置">
                             <span class="tip" v-show="versions?true:false"></span>
                             <img slot="icon" src="../../static/images/audit/record/set.png">
                             设置
                         </mt-tab-item>
                     </router-link>
+<!--                    <router-link to="/audit/changeInfo">-->
+<!--                        <mt-tab-item id="设置">-->
+<!--                            <span class="tip" v-show="versions?true:false"></span>-->
+<!--                            <img slot="icon" src="../../static/images/audit/record/set.png">-->
+<!--                            设置-->
+<!--                        </mt-tab-item>-->
+<!--                    </router-link>-->
                 </div>
             </mt-tabbar>
         </div>

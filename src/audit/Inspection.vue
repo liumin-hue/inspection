@@ -120,7 +120,7 @@
 
                             <div class="mui-table-view-cell" v-show="!blackShow">
                                 <div>黑名单性质</div>
-                                <span>{{BlackListSelectedName}}<span class="mui-icon mui-icon-arrowdown"></span></span>
+                                <span>{{BlackListSelectedName2}}<span class="mui-icon mui-icon-arrowdown"></span></span>
                             </div>
 
                             <div id="popselet" class="mui-table-view-cell" @click="chooseBlackList()" v-show="blackShow">
@@ -218,6 +218,7 @@
                         </router-link>
                     </ul>
                 </mt-tab-container-item>
+
             </mt-tab-container>
         </div>
     </div>

@@ -154,7 +154,7 @@
                 //workOrderPoolNew: 0,
                 isLoading: false,//载入动画
                 versions: false,//是否提示有新版本
-                oldVersions: "3.0.1"//旧版本号
+                oldVersions: "3.0.2"//旧版本号
             };
         },
         props: {},
@@ -177,6 +177,7 @@
             this.$store.versions = this.oldVersions
             console.log(this.$store.versions)
             this.getHomeData();//获取首页数据统计
+            this.comebefor()
         },
         //判断跳转路径
         // beforeRouteEnter: (to, from, next) => {
@@ -339,6 +340,12 @@
         deactivated() {
         },
         methods: {
+            comebefor(){
+                if(this.$route.query.id == '设置'){
+                    this.tab_selected='设置'
+                    console.log(this.tab_selected)
+                }
+            },
             getHomeData(){
                 var _this = this;
 

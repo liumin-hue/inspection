@@ -62,11 +62,8 @@ import PendingDeal from './audit/PendingDeal.vue'//待处理
 import InspectionDetail from './audit/InspectionDetail.vue'//稽查记录详情
 import Inspection from './audit/Inspection.vue'//稽查
 import dealAudit from './audit/dealAudit.vue'//稽查
-// import Inspection from './audit/workOrderReply.vue'//稽查
 import ChangePassword from './audit/changePassword.vue'//修改密码页面
-import ChangeInfo from './audit/changeInfo.vue'//修改信息页面
 import Versions from './audit/versions.vue'//版本升级页面
-// import set from './audit/Set.vue'//版本升级页面
 
 //===============================================生命组件
 // import ScrollTop from './component/scrollTop.vue'//添加返回顶部组件
@@ -125,7 +122,7 @@ var router = new VueRouter({
         { path: '/', redirect: "/login", meta: { keepAlive: false } },
         { path: "/login", component: login, meta: { keepAlive: false } },
         // { path: "/home", component: home, meta: { keepAlive: false } },
-        { path: "/home", component: home, meta: { keepAlive: true } },
+        { path: "/home",name:'home', component: home, meta: { keepAlive: false } },
         { path: "/AuditRecord", component: AuditRecord },
         { path: "/Blacklist", component: Blacklist },
         { path: "/PendingAudit",name:'PendingAudit', component: PendingAudit },
@@ -135,7 +132,7 @@ var router = new VueRouter({
         { path: "/dealAudit", component: dealAudit, meta: { keepAlive: false } },
         { path: "/audit/changePassword", component: ChangePassword, meta: { keepAlive: false } },
         { path: "/audit/versions", component: Versions, meta: { keepAlive: false } },
-        { path: "/audit/changeInfo", component: ChangeInfo, meta: { keepAlive: false } },
+        // { path: "/audit/changeInfo", component: ChangeInfo, meta: { keepAlive: false } },
         // { path: "/audit/set", component: set, meta: { keepAlive: false } },
     //
     ],
