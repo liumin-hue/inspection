@@ -1,9 +1,7 @@
 <template>
   <div id="big-box">
       <mt-header fixed title="版本升级">
-        <router-link to="/home" slot="left">
-          <mt-button icon="back"></mt-button>
-        </router-link>
+          <mt-button icon="back" slot="left" @click="back"></mt-button>
       </mt-header>
       <div>
           <div class="logo"></div>
@@ -11,7 +9,7 @@
           <div class="newVersions">最新版本：{{newVersions}}</div>
           <div class="tipBox">
                 <div class="content">
-                    <!-- <div class="andr_click">1.安卓用户请前往PC端手机版客服扫描二维码更新系统</div> -->
+                    <!-- <div class="andr_click">1.安卓用户请前往PC端手机版稽查扫描二维码更新系统</div> -->
                     <mt-button type="primary" v-if="!isIOS" size="large" @click="andr_click">下载安卓最新版本</mt-button>
                     <!-- <div class="ios" v-if="isIOS">ios用户请于App Store下载更新系统</div> -->
                     <!-- <mt-button type="primary" v-if="isIOS" size="large" @click="ios">下载IOS最新版本</mt-button> -->
@@ -43,6 +41,9 @@ export default {
     this.versionAddress = this.$store.versionAddress;
   },
   methods: {
+    back(){
+        this.$router.go(-1)
+    },
     andr_click() {
       var _this=this;
       plus.nativeUI.toast("正在准备环境，请稍后！");

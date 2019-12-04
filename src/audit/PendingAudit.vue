@@ -17,21 +17,22 @@
                 <ul>
                     <li class="audit_argument">
                         <div class="model_bottom">
-                            <div class="name"><span><span class="status">开始日期：</span>{{this.datas.InspectionStartDate}}</span>
+                            <div class="name"><span><span class="status">开始日期：{{this.datas.InspectionStartDate}}</span></span>
                             </div>
-                            <div class="phone"><span class="status">结束日期：</span>{{this.datas.InspectionEndDate}}</div>
+                            <div class="phone"><span class="status">结束日期：{{this.datas.InspectionEndDate}}</span></div>
                         </div>
                         <div class="model_bottom">
-                            <div class="phone"><span class="status">稽查进度：</span>{{this.datas.InspectionComNum}}</div>
-                            <div class="phone"><span class="status">未稽查：</span>{{this.datas.UnInspectionNum}}</div>
+                            <div class="phone"><span class="status">稽查进度：已稽查{{this.datas.InspectionComNum}}</span></div>
+                            <div class="phone"><span class="status">未稽查{{this.datas.UnInspectionNum}}</span></div>
                         </div>
                     </li>
                 </ul>
             </div>
         </div>
         <div style="height: 183px;width: 100%;"></div>
-        <div class="plan_content">
-            <div class="plan_list">
+        <div class="plan_content" id="plan_content">
+
+            <div class="plan_list" id="plan_list">
                 <ul>
                     <!--                    第二次点击   点击小区 出现户-->
                     <li v-for="(item,index) in communityList" class="pendinglist">
@@ -43,74 +44,69 @@
                     </li>
                 </ul>
             </div>
-            <div class="eachplan_content">
-                <ul>
-                    <li v-for="(item,index) in familyList" class="content_list" @click="House(index)">
+            <div class="eachplan_content" id="eachplan_content">
+                <ul id="contentul">
+                    <li v-for="(item,index) in familyList" class="house_list" @click="House(index)">
                         <router-link to="/inspection">
                             <div class="address">
                                 <div class="people_name"><span class="status">地址：</span>{{item.Address}}</div>
                             </div>
                             <div class="name_icon">
-                            <div class="cusname"><span class="status">姓名：</span>{{item.CusName}}</div>
-
+                                <div class="cusname"><span class="status">姓名：</span>{{item.CusName}}</div>
                                 <div class="icon_status">
-                            <div v-if="item.HeatStatus==0" class="status_icon status_zc">{{item.HeatStatusMeaning}}</div>
-                            <div v-if="item.HeatStatus==1" class="status_icon status_bt">{{item.HeatStatusMeaning}}</div>
-                            <div v-if="item.HeatStatus==2" class="status_icon status_qt">{{item.HeatStatusMeaning}}</div>
-                            <div v-if="item.HeatStatus==3" class="status_icon status_wg">{{item.HeatStatusMeaning}}</div>
-                            <div v-if="item.IsArrears ==1" class="status_icon status_q2">欠</div>
-                            <div v-if="item.IsArrears ==0" class="status_icon status_q1">欠</div>
-                            <div v-if="item.IsCheckBlack==1" class="status_icon status_h">{{item.IsCheckBlackMeaning}}</div>
-<!--                            <div v-if="item.IsCheckBlack==0" class="status_icon status_h">{{item.IsCheckBlackMeaning}}</div>-->
+                                    <div v-if="item.HeatStatus==0" class="status_icon status_zc">
+                                        {{item.HeatStatusMeaning}}
+                                    </div>
+                                    <div v-if="item.HeatStatus==1" class="status_icon status_bt">
+                                        {{item.HeatStatusMeaning}}
+                                    </div>
+                                    <div v-if="item.HeatStatus==2" class="status_icon status_qt">
+                                        {{item.HeatStatusMeaning}}
+                                    </div>
+                                    <div v-if="item.HeatStatus==3" class="status_icon status_wg">
+                                        {{item.HeatStatusMeaning}}
+                                    </div>
+                                    <div v-if="item.IsArrears ==1" class="status_icon status_q2">欠</div>
+                                    <div v-if="item.IsArrears ==0" class="status_icon status_q1">欠</div>
+                                    <div v-if="item.IsCheckBlack==1" class="status_icon status_h">
+                                        {{item.IsCheckBlackMeaning}}
+                                    </div>
+                                    <!--                            <div v-if="item.IsCheckBlack==0" class="status_icon status_h">{{item.IsCheckBlackMeaning}}</div>-->
+                                </div>
                             </div>
-                            </div>
-<!--                            <div>{{item.IsArrearMeaning}}</div>   &lt;!&ndash; 是否欠费&ndash;&gt;-->
-<!--                            <div>{{item.IsCheckBlackMeaning}}</div>-->
-
-<!--                            <div class="status_icon status_zc">正常</div>-->
-<!--                            <div class="status_icon status_qt">强停</div>-->
-<!--                            <div class="status_icon status_bt">报停</div>-->
-<!--                            <div class="status_icon status_h">黑</div>-->
-<!--                            <div class="status_icon status_q1">欠</div>-->
-<!--                            <div class="status_icon status_q2">欠</div>-->
-<!--                            <div class="status_icon status_wg">未供</div>-->
-
-
-
-<!--                            <span v-if="ProStatusMeaning==1" class="status_icon status_zc">正常</span>-->
-
-
-
                         </router-link>
                     </li>
                 </ul>
             </div>
+            <mt-tabbar v-model="selected" style="position: fixed;bottom: 0">
+                <div class="foo">
+                    <router-link to="/home">
+                        <mt-tab-item id="首页">
+                            <img slot="icon" src="../../static/images/audit/record/home.png">
+                            首页
+                        </mt-tab-item>
+                    </router-link>
+                </div>
+                <div class="foo">
+                    <router-link to="/audit/changeInfo">
+                        <mt-tab-item id="设置">
+                            <span class="tip" v-show="versions?true:false"></span>
+                            <img slot="icon" src="../../static/images/audit/record/set.png">
+                            设置
+                        </mt-tab-item>
+                    </router-link>
+                </div>
+            </mt-tabbar>
         </div>
         <!--        底部tab-->
-        <mt-tabbar v-model="selected" style="position: fixed;bottom: 0">
-            <div class="foo">
-                <router-link to="/home">
-                    <mt-tab-item id="首页">
-                        <img slot="icon" src="../../static/images/audit/record/home.png">
-                        首页
-                    </mt-tab-item>
-                </router-link>
-            </div>
-            <div class="foo">
-                <router-link to="/audit/changeInfo">
-                    <mt-tab-item id="设置">
-                        <img slot="icon" src="../../static/images/audit/record/set.png">
-                        设置
-                    </mt-tab-item>
-                </router-link>
-            </div>
-        </mt-tabbar>
+
     </div>
 </template>
 <script>
     export default {
         data() {
             return {
+                versions:"",//是否需要升级，需要升级则显示红点
                 datas: [],           //每个计划的详细信息
                 planButton: 0,      //初始选中index=0的稽查计划 被选择计划的index，来改变被选计划的背景颜色
                 planlistButton: 0, //小区列表index 被选择小区的index，来改变被选小区的背景颜色
@@ -125,6 +121,10 @@
             // this.communityList[this.planlistButton].CommunityID
         },
         mounted() {
+            var total = document.documentElement.clientHeight - 183;
+            // document.getElementById("eachplan_content").style.height=total+"px";
+            document.getElementById("plan_content").style.height=total+"px";
+            this.getHomeData()//获取新版本号
             //稽查计划列表，小区列表
             console.log('待稽查')
             this.$http
@@ -182,6 +182,7 @@
                 this.$store.state.communityID = this.communityList[index].CommunityID
                 this.$store.state.inspectionID = this.communityList[index].InspectionID
                 this.Familyform(index)
+                document.getElementById("contentul").style.top=0+"px";
             },
             //户列表
             Familyform(index) {
@@ -196,7 +197,14 @@
                     .then(res => {
                         var _this = this
                         this.familyList = res.body.Data
+                        console.log(this.familyList)
+                        this.familyList.forEach(function (item) {
+                            if (item.IsCheckBlackMeaning == '是') {
+                                item.IsCheckBlackMeaning = '黑'
+                            }
+                        })
                         // console.log(this.familyList)
+                        document.getElementById("contentul").style.top=0+"px";
                         this.$store.state.familyList = this.familyList
                     })
             },
@@ -205,153 +213,211 @@
                 // var _this =this
                 this.houseList = this.familyList[index]
                 this.$store.state.houseList = this.houseList
-                console.log(this.planlist)
-                console.log(this.communityList)
-                console.log(this.familyList)
+                // console.log(this.planlist)
+                // console.log(this.communityList)
+                // console.log(this.familyList)
                 console.log(this.houseList)
                 // console.log(this.$store.CurrentYear)
-            }
+            },
+            getHomeData(){
+                var _this = this;
+
+                //获取首页数据统计
+                this.$http
+                    .get(this.$myConfig.host + "/Api/InspectionApp/GetFirstPageData")
+                    .then(
+                        function (res) {
+                            let resInfo = $.parseJSON(res.bodyText);
+                            if (resInfo.IsSuccess) {
+                                var Version=resInfo.Data.Version
+                                var oldVersions=_this.$store.versions
+                                console.log(oldVersions)
+
+                                // 判断版本号，新老版本号比较
+                                if (Version.split('.').join('') > oldVersions.split('.').join('')) {
+                                    _this.versions = true
+                                    _this.$store.newVersions = Version
+                                } else {
+                                    _this.versions = false
+                                }
+                            
+                            } else {
+                                Toast(resInfo.Message);
+                            }
+                        },
+                        function (err) {
+                            Toast("请检查您的网络");
+                        }
+                    );
+            },
         }
     }
 </script>
 <style scoped>
+/* 版本提示图标 */
+.tip {
+    background-color: #f44336;
+    display: block;
+    position: absolute;
+    width: 0.1rem;
+    height: 0.1rem;
+    border-radius: 50%;
+    top: 0.05rem;
+    right: 0.2rem;
+}
+.pending {
+    height: 100%;
+    background-color: #fff;
+    color: #595959;
+    font-size: 13px;
+}
+.plan_content {
+    display: flex;
+    flex-wrap: nowrap;
+    background-color: #fff;
+}
 
-    .pending {
-        height: 100%;
-        background-color: #fff;
-        color: #595959;
-        font-size:13px;
-    }
+.eachplan_content {
+    width: 77.8%;
+    margin-bottom: 47px;
+    overflow: scroll;
+}
+.plan_list {
+    width: 22.2%;
+    overflow: scroll;
+    background-color: #F0F0F0;
+    margin-bottom: 47px;
+}
+.titlehead {
+    position: fixed;
+    width: 100%;
+    z-index: 1000;
+}
 
-    .titlehead {
-        position: fixed;
-        width: 100%;
-        z-index: 1000;
-    }
+.pending_plan {
+    width: 100%;
+    white-space: nowrap;
+    overflow: auto;
+    margin-bottom: 0;
+    background-color: #FFF;
 
-    .pending_plan {
-        width: 100%;
-        white-space: nowrap;
-        overflow: auto;
-        margin-bottom: 0;
-        background-color: #FFF;
+}
 
-    }
+.pending_plan > li {
+    /*width: 26%;*/
+    /*font-size: 15px;*/
+    padding: 10px;
+    display: inline-block;
+    text-align: center;
 
-    .pending_plan > li {
-        /*width: 26%;*/
-        /*font-size: 15px;*/
-        padding: 10px;
-        display: inline-block;
-        text-align: center;
+}
 
-    }
+.pending_plan > li > button {
+    padding: 8px 14px;
+    box-shadow: 0 2px 4px 0 rgba(44, 44, 44, 0.50);
+}
 
-    .pending_plan > li > button {
-        padding: 8px 14px;
-        box-shadow: 0 2px 4px 0 rgba(44, 44, 44, 0.50);
-    }
+.liBackground {
+    color: #fff;
+    background: #45AFFF;
+    border: none;
+    box-shadow: 0 2px 4px 0 rgba(8, 57, 147, 0.50);
+}
 
-    .liBackground {
-        color: #fff;
-        background: #45AFFF;
-        border: none;
-        box-shadow: 0 2px 4px 0 rgba(8, 57, 147, 0.50);
-    }
+.planlistBackground {
+    background-color:#fff;
+}
 
-    .planlistBackground {
-        background-color: #fff;
-    }
+.pendinglist {
+    /*font-size: 10px;*/
+    color: #727272;
+    background-color: #F0F0F0;
+    text-align: left;
 
-    .pendinglist {
-        /*font-size: 10px;*/
-        color: #727272;
-        background-color: #F0F0F0;
-        text-align: left;
+}
 
-    }
+.pending_listname {
+    padding: 10px;
+    font-size: 12px;
+    overflow: hidden;
+    white-space:nowrap;
+    text-overflow:ellipsis;
+}
 
-    .pending_listname {
-        padding: 10px;
-        /*font-size: 14px;*/
-    }
-
-    .plan_content {
-        display: flex;
-        flex-wrap: nowrap;
-        background-color: #fff;
-    }
-
-    .eachplan_content {
-        width: 77.8%;
-        /*font-size: 14px;*/
-        color: #333333;
-    }
-
-    .plan_list {
-        width: 22.2%;
-    }
-
-    .audit_argument {
-        margin: 0;
-    }
-
-
+.audit_argument {
+    margin: 0;
+}
+.pending_auditnews{
+    border-bottom: 1px solid #EFEFEF;
+}
 
 /*    标签*/
-    /*标签*/
-    .status_icon{
-        height:0.25rem;
-        line-height:0.25rem;
-        text-align:center;
-        border-radius:0.04rem;
-        color:#fff;
-        display:inline-block
-    }
-    .status_qt{
-        width:0.4rem;
-        background:#FF6060;
-    }
-    .status_bt{
-        width:0.4rem;
-        background:#FFCC01;
-    }
-    .status_h{
-        width:0.2rem;
-        background:#676767;
-    }
-    .status_q1{
-        width:0.25rem;
-        background:#ccc;
-    }
-    .status_q2{
-        width:0.25rem;
-        background:#FA6400;
-    }
-    .status_wg{
-        width:0.4rem;
-        background:#ccc;
-    }
-    .status_zc{
-        width:0.4rem;
-        background:#2FB91E;
-    }
-    .name_icon{
-        display: flex;
-        /*font-size:12px ;*/
-        /*flex-wrap: wrap;*/
-        justify-content: space-between;
-        /*position: absolute;*/
-    }
-    .cusname{
-        display: inline-block;
-    }
-    .icon_status{
-        /*align-self: flex-end;*/
-        /*width:50%;*/
-        display: inline-block;
-        position: relative;
-        float: right;
-        /*right: 0;*/
-    }
+/*标签*/
+.status_icon {
+    height: 0.25rem;
+    line-height: 0.25rem;
+    text-align: center;
+    border-radius: 0.04rem;
+    color: #fff;
+    display: inline-block
+}
+
+.status_qt {
+    width: 0.4rem;
+    background: #FF6060;
+    margin-right: 0.05rem;
+}
+
+.status_bt {
+    width: 0.4rem;
+    background: #FFCC01;
+    margin-right: 0.05rem;
+}
+
+.status_h {
+    width: 0.25rem;
+    background: #676767;
+    margin-right: 0.05rem;
+}
+
+.status_q1 {
+    width: 0.25rem;
+    background: #ccc;
+    margin-right: 0.05rem;
+}
+
+.status_q2 {
+    width: 0.25rem;
+    background: #FA6400;
+    margin-right: 0.05rem;
+}
+
+.status_wg {
+    width: 0.4rem;
+    background: #ccc;
+    margin-right: 0.05rem;
+}
+
+.status_zc {
+    width: 0.4rem;
+    background: #2FB91E;
+    margin-right: 0.05rem;
+}
+
+.name_icon {
+    display: flex;
+    justify-content: space-between;
+
+}
+.icon_status {
+    /*align-self: flex-end;*/
+    width:43%;
+    font-size: 12px;
+    display: inline-block;
+    position: relative;
+    float: right;
+}
+.cusname {
+    display: inline-block;
+}
 </style>

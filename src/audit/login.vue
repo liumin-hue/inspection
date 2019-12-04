@@ -3,9 +3,10 @@
       <div id="login_title"></div>
       <div id="login_from">
           <div class="input_test">
-            <mt-field label=" " placeholder="用户名" v-model="username" value="username"></mt-field>
-            <mt-field label=" " placeholder="密码" type="password" v-model="password" value="password"></mt-field>
-          </div>
+            <mt-field label=" " placeholder="用户名" v-model="username" value="username" style="border-bottom: 0.02rem solid #fff;"></mt-field>
+            <mt-field label=" " placeholder="密码" type="password" v-model="password" value="password" style="border-bottom: 0.02rem solid #fff;"></mt-field>
+            <mt-checklist v-model="rememberPasswordCheck" :options="checkBoxList" align="left" style="align-items:center;padding-left:0.1rem"></mt-checklist>
+            </div>
           <router-link to=''>
             <mt-button type="primary"  size="large" @click="goHome()">登&nbsp;&nbsp;&nbsp;&nbsp;录</mt-button>
            </router-link>
@@ -17,20 +18,24 @@
   </div>
 </template>
 <script>
-import { Field, Toast } from "mint-ui";
+import { Field, Toast, Picker, Cell, Checklist } from "mint-ui";
+import $ from 'jQuery';
 
 export default {
   data() {
     return {
-      username: "xiongxiong",
-      password: "123456",
-      isIOS: false
+      username: "",
+      password: "",
+      isIOS: false,
+      //--------------------------记住密码
+      rememberPasswordCheck: "",//不为空：勾选，为空：不勾选
+      checkBoxList: ['记住密码'],
     };
   },
   mounted() {
   // 判断手机平台
     if (/(iPhone|iPad|iPod|iOS)/i.test(navigator.userAgent)) {
-        console.log("This is iOS'browse111r."); //这是iOS平台下浏览器
+        console.log("This is iOS'browser."); //这是iOS平台下浏览器
         this.isIOS = true;
         if(plus.storage.getItem("gdkykf_host")){
             this.$myConfig.host = plus.storage.getItem("gdkykf_host")
@@ -43,14 +48,18 @@ export default {
         console.log("This is android'browser.");
         this.isIOS = false;
     }
+
     //获取本地用户名密码
     try {
       this.username = plus.storage.getItem("gdkykf_userName");
       this.password = plus.storage.getItem("gdkykf_password");
+      this.rememberPasswordCheck = plus.storage.getItem("gdkykf_rememberPassword");
     } catch (e) {
       this.username = "";
       this.password = "";
+      this.rememberPasswordCheck = "";
     }
+
 
     //加载html5+
     var _this = this;
@@ -58,16 +67,14 @@ export default {
     document.addEventListener("plusready", onPlusReady, false);
     // 扩展API加载完毕，现在可以正常调用扩展API
     function onPlusReady() {
+
       // 在本地获取账号密码
-      _this.username = plus.storage.getItem("gdkykf_userName")
-        ? plus.storage.getItem("gdkykf_userName")
-        : "";
-      _this.password = plus.storage.getItem("gdkykf_password")
-        ? plus.storage.getItem("gdkykf_password")
-        : "";
+      _this.username = plus.storage.getItem("gdkykf_userName") ? plus.storage.getItem("gdkykf_userName") : "";
+      _this.password = plus.storage.getItem("gdkykf_password") ? plus.storage.getItem("gdkykf_password") : "";
+      _this.rememberPasswordCheck = plus.storage.getItem("gdkykf_rememberPassword") ? plus.storage.getItem("gdkykf_rememberPassword") : "";
 
       //首页返回键处理
-          //处理逻辑：1秒内，连续两次按返回键，则退出应用；
+      //处理逻辑：1秒内，连续两次按返回键，则退出应用；
       var first = null;
       plus.key.addEventListener(
         "backbutton",
@@ -88,103 +95,11 @@ export default {
               }
             }
           } else {
-            if (
-              _this.$route.name == "Reassignment" ||
-              _this.$route.name == "WorkOrderBack" ||
-              _this.$route.name == "WorkOrderReply" ||
-              _this.$route.name == "Delay"
-            ) {
-              _this.$store.wordOrderReplyResult = "";
-            }
             _this.$router.go(-1);
           }
         },
         false
       );
-      // 监听点击消息事件
-      // plus.push.addEventListener(
-      //   "click",
-      //   function(msg) {
-      //     if (msg["payload"].BillStatus == "CSN01") {
-      //       plus.nativeUI.toast("工单池有新工单，请查看");
-      //       // plus.device.vibrate(3000);
-      //         // plus.device.beep(5);
-      //       //新工单来源是工单池
-      //       if (_this.$route.name == "Home") {
-      //         if (_this.$route.matched[0].instances.default) {
-      //           _this.$route.matched[0].instances.default.workOrderPoolNew += 1;
-      //         }
-      //       } else if (_this.$route.name == "WorkOrderPond") {
-      //         if (_this.$route.matched[0].instances.default) {
-      //           _this.$route.matched[0].instances.default.confirms.unshift(
-      //             msg["payload"]
-      //           );
-      //           _this.$route.matched[0].instances.default.total += 1;
-      //         }
-      //       }
-      //     } else if (msg["payload"].BillStatus == "CSN02") {
-      //       plus.nativeUI.toast("有新工单待确认，请查看");
-      //       // plus.device.vibrate(3000);
-      //         // plus.device.beep(5);
-      //       //判断新工单来源是待接收
-      //       if (_this.$route.name == "Home") {
-      //         if (_this.$route.matched[0].instances.default) {
-      //           _this.$route.matched[0].instances.default.toAccept += 1;
-      //         }
-      //       } else if (_this.$route.name == "ToAccept") {
-      //         if (_this.$route.matched[0].instances.default) {
-      //           _this.$route.matched[0].instances.default.confirms.unshift(
-      //             msg["payload"]
-      //           );
-      //           _this.$route.matched[0].instances.default.total += 1;
-      //         }
-      //       }
-      //     }
-      //   },
-      //   false
-      // );
-      // 监听在线消息事件
-      // plus.push.addEventListener(
-      //   "receive",
-      //   function(msg) {
-      //     if (msg["payload"].BillStatus == "CSN01") {
-      //       plus.nativeUI.toast("工单池有新工单，请查看");
-      //       // plus.device.vibrate(3000);
-      //       // plus.device.beep(5);
-      //       //新工单来源是工单池
-      //       if (_this.$route.name == "Home") {
-      //         if (_this.$route.matched[0].instances.default) {
-      //           _this.$route.matched[0].instances.default.workOrderPoolNew += 1;
-      //         }
-      //       } else if (_this.$route.name == "WorkOrderPond") {
-      //         if (_this.$route.matched[0].instances.default) {
-      //           _this.$route.matched[0].instances.default.confirms.unshift(
-      //             msg["payload"]
-      //           );
-      //           _this.$route.matched[0].instances.default.total += 1;
-      //         }
-      //       }
-      //     } else if (msg["payload"].BillStatus == "CSN02") {
-      //       plus.nativeUI.toast("有新工单待确认，请查看");
-      //       // plus.device.vibrate(3000);
-      //         // plus.device.beep(5);
-      //       //判断新工单来源是待接收
-      //       if (_this.$route.name == "Home") {
-      //         if (_this.$route.matched[0].instances.default) {
-      //           _this.$route.matched[0].instances.default.toAccept += 1;
-      //         }
-      //       } else if (_this.$route.name == "ToAccept") {
-      //         if (_this.$route.matched[0].instances.default) {
-      //           _this.$route.matched[0].instances.default.confirms.unshift(
-      //             msg["payload"]
-      //           );
-      //           _this.$route.matched[0].instances.default.total += 1;
-      //         }
-      //       }
-      //     }
-      //   },
-      //   false
-      // );
     }
   },
   methods: {
@@ -196,10 +111,7 @@ export default {
       } else if (this.username == "" || this.password == "") {
         Toast("用户名和密码不能为空");
       } else {
-        try {
-          // plus.nativeUI.alert(plus.storage.getItem("gdkykf_clientid"));//弹出cid
-          var ClientID = plus.storage.getItem("gdkykf_clientid") || "";
-        } catch (e) {}
+
         var _this = this;
         this.$store.isLogin = true;
         //验证登录信息
@@ -217,9 +129,28 @@ export default {
               if (resInfo.IsSuccess) {
                 _this.$store.token = resInfo.Message;//token
                 _this.$router.push({ path: "/home" });
+
+                //Toast("rememberPasswordCheck:"+_this.rememberPasswordCheck)
+
                 //保存账号密码
-                plus.storage.setItem("gdkykf_userName", _this.username);
-                plus.storage.setItem("gdkykf_password", _this.password);
+                if(_this.rememberPasswordCheck){
+                  plus.storage.setItem("gdkykf_userName", _this.username);
+                  plus.storage.setItem("gdkykf_password", _this.password);
+                  plus.storage.setItem("gdkykf_rememberPassword", "1");
+
+                  localStorage.setItem("gdkykf_userName", _this.username);
+                  localStorage.setItem("gdkykf_password", _this.password);
+                  localStorage.setItem("gdkykf_rememberPassword", "1");
+                 }else{
+                  plus.storage.setItem("gdkykf_userName", "");
+                  plus.storage.setItem("gdkykf_password", "");
+                  plus.storage.setItem("gdkykf_rememberPassword", "");
+                  
+                  localStorage.setItem("gdkykf_userName", "");
+                  localStorage.setItem("gdkykf_password", "");
+                  localStorage.setItem("gdkykf_rememberPassword", "");
+                }
+
               } else {
                 Toast(resInfo.Message);
               }
@@ -243,17 +174,19 @@ export default {
 #big-box {
   padding: 0;
   background: url("../../static/images/audit/record/bg.png") no-repeat 0 0;
-  background-size: cover;
+  background-size: 100% 100%;
   overflow: hidden;
 }
 
 #login_from {
-  padding: 0.3rem;
+  padding: 0.3rem 0.35rem;
+  background: none
 }
 
 #login_from > div,
 #login_from > div input {
   font-size: 0.18rem;
+  background: none
 }
 
 #login_from > div input {
@@ -261,9 +194,9 @@ export default {
   border: none;
 }
 
-.input_test {
+/* .input_test {
   margin-bottom: 0.6rem;
-}
+} */
 
 .mint-button {
   height: 0.5rem;

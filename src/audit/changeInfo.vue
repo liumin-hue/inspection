@@ -21,7 +21,7 @@
         <mt-tabbar v-model="selected" style="position: fixed;bottom:-1px">
             <div class="foo">
                 <router-link to="/home">
-                    <mt-tab-item id="首页">s
+                    <mt-tab-item id="首页">
                         <img slot="icon" src="../../static/images/audit/record/home.png">
                         首页
                     </mt-tab-item>
@@ -30,6 +30,7 @@
             <div class="foo">
                 <router-link to="/audit/changeInfo">
                     <mt-tab-item id="设置">
+                        <span class="tip" v-show="versions?true:false"></span>
                         <img slot="icon" src="../../static/images/audit/record/set.png">
                         设置
                     </mt-tab-item>
@@ -44,59 +45,15 @@
     export default {
         data() {
             return {
-                versions: false,
-                oldVersions: "1.1.0"
+                versions:"",//是否需要升级，需要升级则显示红点
+                oldVersions: "3.0.1",//旧版本号
+                tab_selected: "首页",
             };
         },
-
         mounted(){
             // 保存手机版本号
             var _this = this
-            _this.$store.state.versions = this.oldVersions
-            console.log(_this.$store.state.versions)
-            // 挂载首页时查看新工单
-            // try {
-            //     var MyWorkOrderTime = plus.storage.getItem("gdky_myWorkOrderTime");
-            //     var WorkOrderPoolTime = plus.storage.getItem("gdky_workOrderPoolTime");
-            // } catch (e) {
-            //     var MyWorkOrderTime = "";
-            //     var WorkOrderPoolTime = "";
-            // }
-            // 获取用户工单信息
-            this.$http
-                .get(this.$myConfig.host + "/api/UserLogin/GetMountPrepareConditions", {
-                    params: {
-                        UserID: this.$store.UserInfo.UserID,
-                        MyWorkOrderTime: MyWorkOrderTime, // plus.storage.getItem(gdky_myWorkOrderTime)====>获取点击我的工单退出时间
-                        WorkOrderPoolTime: WorkOrderPoolTime // plus.storage.getItem(gdky_workOrderPoolTime)====>获取点击我的工单退出时间
-                    }
-                })
-                .then(
-                    function (res) {
-                        let resInfo = $.parseJSON(res.bodyText);
-                        // console.log(resInfo);
-                        if (resInfo.ReturnResult) {
-                            // console.log(resInfo.AppVersionName.split('.').join('') , resInfo.AppVersionName.split('.').join(''))
-                            // 判断版本号
-                            if (resInfo.AppVersionName.split('.').join('') > this.$store.versions.split('.').join('')) {
-                                this.versions = true
-                                this.$store.newVersions = resInfo.AppVersionName
-                            } else {
-                                this.versions = false
-                            }
-                            _this.$store.toAcceptNew = resInfo.WaitReceptionBillsCounts;
-                            _this.$store.workOrderPoolNew = resInfo.WorkOrderPoolPrompCounts;
-                            //新工单赋值
-                            this.toAccept = this.$store.toAcceptNew;
-                            this.workOrderPoolNew = this.$store.workOrderPoolNew;
-                        } else {
-                            Toast(resInfo.Message);
-                        }
-                    },
-                    function (err) {
-                        Toast("请检查您的网络");
-                    }
-                );
+            this.getHomeData()//获取新版本号
         },
         methods:{
             back(){
@@ -141,29 +98,75 @@
                         //     //提示信息
                         //     Toast("用户注销成功");
                         //     //跳转登录页面
-                        this.$router.push({path: "/login"});
-                        // }
+                            this.$router.push({path: "/login"});
+                        //}
                     })
                     .catch(() => {
                         console.log("取消");
                     });
             },
+            getHomeData(){
+                var _this = this;
+
+                //获取首页数据统计
+                this.$http
+                    .get(this.$myConfig.host + "/Api/InspectionApp/GetFirstPageData")
+                    .then(
+                        function (res) {
+                            let resInfo = $.parseJSON(res.bodyText);
+                            if (resInfo.IsSuccess) {
+                                var Version=resInfo.Data.Version
+                                var oldVersions=_this.$store.versions
+                                console.log(oldVersions)
+
+                                // 判断版本号，新老版本号比较
+                                if (Version.split('.').join('') > oldVersions.split('.').join('')) {
+                                    _this.versions = true
+                                    _this.$store.newVersions = Version
+                                } else {
+                                    _this.versions = false
+                                }
+                            
+                            } else {
+                                Toast(resInfo.Message);
+                            }
+                        },
+                        function (err) {
+                            Toast("请检查您的网络");
+                        }
+                    );
+
+            }
         }
     }
 </script>
 <style scoped>
-    .img_bolt{
-        border-image:none;
-        width:18px;
-        height: 18px;
-        margin-right: 0.05rem;
-    }
-    .system_text {
-        color: #49A9EA;
-    }
-    .system_newtext {
-        color: #f44336;
-    }
+/* 版本提示图标 */
+.tip {
+    background-color: #f44336;
+    display: block;
+    position: absolute;
+    width: 0.1rem;
+    height: 0.1rem;
+    border-radius: 50%;
+    top: 0.05rem;
+    right: 0.2rem;
+}
+.img_bolt{
+    border-image:none;
+    width:18px;
+    height: 18px;
+    margin-right: 0.05rem;
+}
+.system_text {
+    color: #49A9EA;
+}
+.system_newtext {
+    background: #f44336;
+    color: #fff;
+    padding: 0.05rem 0.08rem 0.02rem;
+    border-radius: 0.07rem;
+}
 .quit{
     background-color: #F5F5F5;
     font-size: 14px;

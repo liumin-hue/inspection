@@ -16,103 +16,130 @@
             </mt-navbar>
 
 
-            <mt-tab-container v-model="selected">
+            <mt-tab-container v-model="selected" swipeable>
                 <!--    稽查-->
-                <mt-tab-container-item id="audit_inspection" class="audit_form">
-                    <div class="pending_auditnews">
-                        <ul>
-                            <div style="height: 76px;width: 100%;"></div>
-                            <li class="content_list">
-
-                                <router-link to="/inspection">
-                                    <div class="people_name"><span class="status">地址：</span>{{this.houseList.Address}}
-                                    </div>
-                                    <div class="people_name"><span class="status">姓名：</span>{{this.houseList.CusName}}
-                                    </div>
-                                </router-link>
-                            </li>
-                        </ul>
-
-
-                        <mt-cell title="是否有问题">
-                            <div class="radio-box" v-for="(item,index) in radios" :key="item.id">
-                                <span class="radio" :class="{'on':item.isChecked}"></span>
-                                <input v-model="question" :value="item.value" class="input-radio"
-                                       :checked='item.isChecked' @click="check(index)" type="radio">{{item.label}}
-                            </div>
-                        </mt-cell>
-
-                    </div>
-                    <div class="mui-table-view-cell" @click="choosequesType()">
-                        <div>问题类型</div>
-                        <span>{{quesTypeSelectedName}}<span class="mui-icon mui-icon-arrowdown"></span></span>
-                    </div>
-                    <!-- 问题类型下拉 -->
-                    <mt-popup v-model="quesType" popup-transition="popup-fade" position="bottom" class="bottomPicker">
-                        <div class="pickerTitle">请选择问题类型</div>
-                        <mt-picker :slots="quesTypeItems" @change="quesTypeChange" value-key="TypeName"></mt-picker>
-                    </mt-popup>
-                    <mt-field label="详情"
-                              type="textarea" rows="4"
-                              v-bind:value="optionID"
-                              v-model="details">
-                    </mt-field>
-
-                    <div class="mui-table-view-cell">
-                        <div class="filesend">上传照片</div>
-                        <div class="content">
-                            <input type="hidden" id="ckjl.id" name="ckjl.id" value="429">
-                            <div class="collapse-content">
-                                <form>
-                                    <label class="row-label"></label>
-                                    <div id='ImageS' class="row image-list clearfix">
-                                        <span class="uploadImage" id="Image" @click="showActionSheet()"></span>
-                                        <div :id="imgID" class="image-item" v-for="(img,index) in imgs" :key="img.id">
-                                            <img id="picBig" class="preview-img" @click="$preview.open(index, imgs)"
-                                                 :src="img.src">
-                                            <span class="del_btn"
-                                                  @click="delImg(img.imgId,img.imgkey,img.id,img.img_index)"></span>
-                                            <div class="fa fa-times-circle"></div>
+                <mt-tab-container-item id="audit_inspection" class="audit_form" >
+                    <div id="inspec">
+                        <div class="pending_auditnews">
+                            <ul >
+                                <div style="height: 76px;width: 100%;"></div>
+                                <!--                            <pre>{{$data.proStatusItems}}</pre>-->
+                                <li class="content_list">
+                                    <router-link to="/inspection">
+                                        <div class="people_name"><span class="status">地址：</span>{{this.houseList.Address}}
                                         </div>
-                                    </div>
-                                </form>
+                                        <div class="people_name"><span class="status">姓名：</span>{{this.houseList.CusName}}
+                                        </div>
+                                    </router-link>
+                                </li>
+                            </ul>
+
+                            <div class="mui-table-view-cell">
+                                <div>是否有问题</div>
+                                <span>
+                                <div class="radio-box" v-for="(item,index) in radios" :key="item.id">
+                                    <span class="radio" :class="{'on':item.isChecked}"></span>
+                                    <input v-model="question" :value="item.value" class="input-radio" :checked='item.isChecked' @click="isQuestion(index)" type="radio">
+                                    {{item.label}}
+                                </div>
+                            </span>
                             </div>
+
+
+
+                            <div id="quesTypeID" class="mui-table-view-cell" @click="choosequesType()" v-show="!haveQuestion">
+                                <div>问题类型</div>
+                                <span>{{quesTypeSelectedName}}<span class="mui-icon mui-icon-arrowdown"></span></span>
+                            </div>
+                            <!-- 问题类型下拉 -->
+                            <mt-popup v-model="quesType" popup-transition="popup-fade" position="bottom" class="bottomPicker">
+                                <div class="pickerTitle">请选择问题类型</div>
+                                <mt-picker :slots="quesTypeItems" @change="quesTypeChange" value-key="TypeName"></mt-picker>
+                            </mt-popup>
+
+
+                            <div class="mui-table-view-cell" id="detailID" v-show="!haveQuestion">
+                                <mt-field  label="详情" type="textarea" rows="4" v-bind:value="details" v-model="details" :attr="{ maxlength: 100 }"
+                                           style="padding-left:0.06rem;">
+                                </mt-field>
+                            </div>
+
+                            <div class="mui-table-view-cell">
+                                <div class="filesend">上传照片</div>
+                                <div class="content">
+                                    <input type="hidden" id="ckjl.id" name="ckjl.id" value="429">
+                                    <div class="collapse-content">
+                                        <form>
+                                            <label class="row-label"></label>
+
+                                            <div id='ImageS' class="row image-list clearfix">
+
+                                                <viewer class="image-item" v-for="(img,index) in Image" :key="img.id">
+                                                    <img class="preview-img" @click="$preview.open(index, Image)"
+                                                         :src="img">
+                                                    <span class="del_btn"
+                                                          @click="delImage(index)"></span>
+                                                    <div class="fa fa-times-circle"></div>
+                                                </viewer>
+
+                                                <div :id="imgID" class="image-item" v-for="(img,index) in imgs" :key="img.id">
+                                                    <img id="picBig" class="preview-img" @click="$preview.open(index, imgs)"
+                                                         :src="img.src">
+                                                    <span class="del_btn"
+                                                          @click="delImg(img.imgId,img.imgkey,img.id,img.img_index)"></span>
+                                                    <div class="fa fa-times-circle"></div>
+                                                </div>
+                                                <span class="uploadImage" id="Image" @click="showActionSheet()"></span>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div id="statuID" class="mui-table-view-cell" @click="chooseProStatus()" v-show="!haveQuestion">
+                                <div>处理状态</div>
+                                <span>{{proStatusSelectedName}}<span class="mui-icon mui-icon-arrowdown"></span></span>
+                            </div>
+                            <!-- 处理状态下拉 -->
+                            <mt-popup v-model="proStatusList" popup-transition="popup-fade" position="bottom"
+                                      class="bottomPicker">
+                                <div class="pickerTitle">请选择处理状态</div>
+                                <mt-picker :slots="proStatusItems" @change="proStatusChange" value-key="Name"></mt-picker>
+                            </mt-popup>
+
+                            <div class="mui-table-view-cell" id="advanceID" v-show="!haveQuestion">
+                                <mt-field  label="处理意见" type="textarea" rows="4" v-model="advance" :attr="{ maxlength: 100 }" style="padding-left:0.06rem"></mt-field>
+                            </div>
+
+                            <div class="mui-table-view-cell checkmod">
+                                <div>黑名单</div>
+                                <span><mt-checklist v-model="blackcheck" :options="radiolist" @change="blackChange" class="checkblack" style="height:0.2rem"></mt-checklist>
+                                    </span>
+<!--                                <input type="checkbox" v-model="blackcheck" :options="radiolist" @change="blackChange" class="checkblack" style="height:0.23rem">-->
+                            </div>
+
+                            <div class="mui-table-view-cell" v-show="!blackShow">
+                                <div>黑名单性质</div>
+                                <span>{{BlackListSelectedName}}<span class="mui-icon mui-icon-arrowdown"></span></span>
+                            </div>
+
+                            <div id="popselet" class="mui-table-view-cell" @click="chooseBlackList()" v-show="blackShow">
+                                <div>黑名单性质</div>
+                                <span>{{BlackListSelectedName}}<span class="mui-icon mui-icon-arrowdown"></span></span>
+                            </div>
+                            <!-- 黑名单性质下拉 -->
+                            <mt-popup v-model="BlackList" popup-transition="popup-fade" position="bottom" class="bottomPicker" >
+                                <div class="pickerTitle">请选择黑名单性质</div>
+                                <mt-picker :slots="BlackListItems" @change="BlackListChange" value-key="TypeName"></mt-picker>
+                            </mt-popup>
+
+                            <div class="mui-table-view-cell" >
+                                <mt-field label="黑名单备注" type="textarea" rows="4" v-model="blackRemark" class="black_remark"  :attr="{ maxlength: 100 }" :readonly="read" style="padding-left:0.06rem"></mt-field>
+                            </div>
+
+                            <mt-button type="primary" size="large" @click="savaData" class="submit_btn">确定</mt-button>
                         </div>
                     </div>
-
-                    <div class="mui-table-view-cell" @click="chooseProStatus()">
-                        <div>处理状态</div>
-                        <span>{{proStatusSelectedName}}<span class="mui-icon mui-icon-arrowdown"></span></span>
-                    </div>
-                    <!-- 处理状态下拉 -->
-                    <mt-popup v-model="proStatusList" popup-transition="popup-fade" position="bottom"
-                              class="bottomPicker">
-                        <div class="pickerTitle">请选择处理状态</div>
-                        <mt-picker :slots="proStatusItems" @change="proStatusChange" value-key="Name"></mt-picker>
-                    </mt-popup>
-
-                    <mt-field label="处理意见" type="textarea" rows="4" v-model="advance"
-                              class="detailscss"></mt-field>
-
-                    <div class="mui-table-view-cell" @click="chooseBlackList()">
-                        <div>黑名单性质</div>
-                        <span>{{BlackListSelectedName}}<span class="mui-icon mui-icon-arrowdown"></span></span>
-                    </div>
-                    <!-- 黑名单性质下拉 -->
-                    <mt-popup v-model="BlackList" popup-transition="popup-fade" position="bottom" class="bottomPicker">
-                        <div class="pickerTitle">请选择黑名单性质</div>
-                        <mt-picker :slots="BlackListItems" @change="BlackListChange" value-key="TypeName"></mt-picker>
-                    </mt-popup>
-
-                    <mt-cell title="黑名单" class="detailscss" >
-                        <!--              <mt-radio v-model="value" :options="radiolist"></mt-radio>-->
-                        <mt-checklist v-model="blackcheck" :options="radiolist" @change="blackChange" class="checkblack"></mt-checklist>
-                    </mt-cell>
-
-                    <mt-field label="黑名单备注" type="textarea" rows="4" v-model="blackRemark"
-                              class="black_remark"></mt-field>
-                    <mt-button type="primary" size="large" @click="savaData" class="submit_btn">确定</mt-button>
-
                 </mt-tab-container-item>
 
                 <!--     客户资料-->
@@ -123,14 +150,41 @@
                             <div class="cusNews">
                                 <div class="people_name"><span class="status">地址：</span>{{this.houseList.Address}}
                                 </div>
-                                <div class="cusname"><span class="status">姓名：</span>{{this.cusInform.CusName}}</div>
+                                <div class="cusname"><span class="status">姓名：</span>{{this.cusInform.CusName}}
+                                    <div class="icon_status">
+                                    <div v-if="HeatStatus==0" class="status_icon status_zc">
+                                        {{HeatStatusMeaning}}
+                                    </div>
+                                    <div v-if="HeatStatus==1" class="status_icon status_bt">
+                                        {{HeatStatusMeaning}}
+                                    </div>
+                                    <div v-if="HeatStatus==2" class="status_icon status_qt">
+                                        {{HeatStatusMeaning}}
+                                    </div>
+                                    <div v-if="HeatStatus==3" class="status_icon status_wg">
+                                        {{HeatStatusMeaning}}
+                                    </div>
+                                    <div v-if="IsArrears ==1" class="status_icon status_q2">欠</div>
+                                    <div v-if="IsArrears ==0" class="status_icon status_q1">欠</div>
+                                    <div v-if="IsCheckBlack==1" class="status_icon status_h">
+                                        {{IsCheckBlackMeaning}}
+                                    </div>
+                                    <!--                            <div v-if="item.IsCheckBlack==0" class="status_icon status_h">{{item.IsCheckBlackMeaning}}</div>-->
+                                </div>
+                                </div>
+
                             </div>
                             <div class="model_bottom">
-                                <div class="phone"><span class=""><span class="status">客户卡号：</span>{{this.cusInform.CusCardNO}}</span>
+                                <div class="phone"><span class=""><span class="status">房间号：</span>{{this.cusInform.RoomID}}</span>
                                 </div>
                                 <div class="phone"><span class="status">客户类型：</span>{{this.cusInform.strCusType}}</div>
                             </div>
-                            <div class="people_name"><span class="status">备注：</span>{{this.houseList.Address}}</div>
+                            <div class="model_bottom">
+                                <div class="phone"><span class=""><span class="status">用热状态：</span>{{HeatStatusMeaning}}</span>
+                                </div>
+                                <div class="phone"><span class="status">是否是黑名单：</span>{{isCheckBlack}}</div>
+                            </div>
+                            <div class="people_remark"><span class="status">备注：</span>{{this.cusInform.Remark}}</div>
 <!--                            <mt-field label="备注" type="textarea" rows="3" class="cus_remark"-->
 <!--                                      readonly>{{this.cusInform.Remark}}</mt-field>-->
                         </li>
@@ -142,28 +196,28 @@
                 <mt-tab-container-item id="audit_user">
                     <ul>
                         <div style="height: 87px;width: 100%;"></div>
-                        <router-link></router-link>
-                        <li v-for="(item,index) in auditHistory" :key="index"
-                            class="bolt_argument">
-                            <div class="plan">
-                                <span class="status">稽查计划：</span><span>{{item.PlanName}}</span>
-                            </div>
-                            <div class="model_bottom">
-                                <div class="isQues">
-                                    <span class="status">供热年度：</span>{{item.CurrentYear}}
+                        <router-link to="/InspectionDetail" >
+                            <li v-for="(item,index) in auditHistory" :key="index"
+                                class="bolt_argument" @click="recordDetail(index)">
+                                <div class="plan">
+                                    <span class="status">稽查计划：</span><span>{{item.PlanName}}</span>
                                 </div>
-                                <div class="status_deal"><span class="status">稽查时间：</span>{{item.InspectionTime}}</div>
-                            </div>
-                            <div class="model_bottom">
-                                <div class="isQues"><span class="status">是否有问题：</span>{{item.strIsProblem}}
+                                <div class="model_bottom">
+                                    <div class="isQues">
+                                        <span class="status">供热年度：</span>{{item.ChargeYear}}
+                                    </div>
+                                    <div class="status_deal"><span class="status">稽查时间：</span>{{item.InspectionTime}}</div>
                                 </div>
-                                <div class="status_deal"><span class="status">处理状态：</span>{{item.strProStatus}}</div>
-                            </div>
-                            <div class="address"><span class="status">稽查人员：</span>{{item.InspectionPersonName}}</div>
-                        </li>
+                                <div class="model_bottom">
+                                    <div class="isQues"><span class="status">是否有问题：</span>{{item.strIsProblem}}
+                                    </div>
+                                    <div class="status_deal"><span class="status">处理状态：</span>{{item.strProStatus}}</div>
+                                </div>
+                                <div class="address"><span class="status">稽查人员：</span>{{item.InspectionPersonName}}</div>
+                            </li>
+                        </router-link>
                     </ul>
                 </mt-tab-container-item>
-
             </mt-tab-container>
         </div>
     </div>
@@ -181,10 +235,17 @@
     export default {
         data() {
             return {
+                tabActive: "audit_inspection",
+                haveQuestion:false,//无问题：显示 问题类型，详情，处理状态，处理意见
                 auditHistory: [],
                 question: '', //初始选择有问题
                 houseList: [],       //每户信息
-                cusInform: [],     //客户资料
+                HeatStatus:'',
+                HeatStatusMeaning:'',
+                IsArrears:'',
+                IsCheckBlack:'',
+                IsCheckBlackMeaning:'',
+                cusInform: {Remark:'',CusName:'',},     //客户资料
                 communityID: '',
                 IsProblem: '',
                 planName: '',
@@ -208,7 +269,7 @@
                         isChecked: false,
                     }
                 ], //有问题  无问题  单选按钮
-                blackCheckbox:1,
+                blackCheckbox:0,
                 slotsDeal: [],  //问题类型/处理状态
                 questionState: false,  //问题类型  点击显示隐藏的变量
                 changeDealState: false, //处理状态  点击显示隐藏的变量
@@ -221,13 +282,14 @@
                 imgs: [],    //上传图片
                 blackRemark: '',   //黑名单备注（表单textarea）
                 blacklist: '',     //黑名单   加入 移除
+                isCheckBlack:'',   //客户资料中是否是黑名单
                 radiolist: '',
                 blackcheck: "",
                 ProStatusMeaning: '',
                 BlackListType: '',
                 BlackListRemark: '',
                 remark_bz: '',  //备注
-
+                cusBlack:'', // 客户资料里 是否是黑名单
                 //--------------------------处理状态
                 proStatusSelectedName: "",//选中项中文名称
                 proStatusValue: "",//选中项value（即ID）
@@ -242,7 +304,9 @@
                 ],
 
 //--------------------------黑名单性质
+                blackShow:true,
                 BlackListSelectedName: "",//选中项中文名称
+                BlackListSelectedName2: "",//选中项中文名称
                 BlackListValue: "",//选中项value（即ID）
                 BlackList: false,
                 BlackListItems: [
@@ -279,7 +343,7 @@
 
 
                 // action sheet 默认不显示，为false。操作sheetVisible可以控制显示与隐藏
-                quesType: false,
+
                 show: [],
                 scrollTop: "",
                 offsetTop: "",
@@ -374,44 +438,51 @@
                 img_index = 0;
             }
         },
-
+        watch:{
+            quesTypeSelectedName(val,oldval){
+                console.log(val + ' ' +'val')
+                console.log(oldval)
+            },
+            proStatusSelectedName(val,oldval){
+                console.log(val + ' ' +'val')
+                console.log(oldval)
+            },
+        },
         mounted() {
+            var total = document.documentElement.clientHeight;
+            // document.getElementById("eachplan_content").style.height=total+"px";
+            document.getElementById("inspec").style.height=total+"px";
             // 初始化页面赋值
             this.houseList = this.$store.state.houseList;        //上页获取的信息
             this.IsProblem = this.houseList.IsProblem;   //是否有问题 无1  有2
-            this.quesTypeValue = '';     // 问题类型 id
-            this.details = '';   //详情（表单textarea）
-            this.advance = "";  // 处理意见
-            this.blackcheck = "";  //黑名单 加入移除 传值  0 移除  1 加入
-            this.proStatusValue =this.ProStatus;     //处理状态
-            this.blacker = "";     //黑名单性质
-            this.blackRemark = this.houseList.BlackRemark;  //黑名单备注
-            this.check(1);        //是否有问题   初始选择1  无问题
+            this.HeatStatus = this.houseList.HeatStatus
+            this.HeatStatusMeaning = this.houseList.HeatStatusMeaning
+            this.IsArrears = this.houseList.IsArrears
+            this.IsCheckBlack = this.houseList.IsCheckBlack
+            this.blackRemark = this.houseList.BlackRemark
+            this.IsCheckBlackMeaning = this.houseList.IsCheckBlackMeaning
+            this.isQuestion(1);        //是否有问题   初始选择1  无问题
             this.ContactPhone = this.$store.state.houseList.Mobile   // 手机号
-            this.CusList()         //客户资料接口
-            this.AuditHistory()   //稽查历史
 
-            // this.$http
-            //     .get(this.$myConfig.host + '/Api/InspectionApp/GetSendJob', {
-            //         params: {
-            //             status: 0,
-            //             chargeYear: this.$store.CurrentYear,
-            //             InspectionID: this.$store.state.inspectionID,
-            //             CommunityID: this.$store.state.communityID,
-            //         }
-            //     })
-            //     .then(res => {
-            //         this.familyList = res.body.Data
-            //     })
 
             //----------------------------------------------------------------黑名单显示  加入 / 移除
             if (this.houseList.IsCheckBlack == 0) {
                 this.radiolist = ["加入"]
 
             } else if (this.houseList.IsCheckBlack == 1) {
-                this.radiolist = ["移除"]
+                this.radiolist = ["移出"]
             }
 
+            if (this.houseList.IsCheckBlackMeaning == '黑'){
+                this.isCheckBlack = '是'
+            }else{
+                this.isCheckBlack = '否'
+            }
+            if(this.radiolist[0] == "移出"){
+                this.blackShow = false
+                this.read=true
+                console.log(this.blackShow)
+            }
             //---------------------------------------------------------------问题类型
             this.$http
                 .get(this.$myConfig.host + "/Api/DropdownList/GetProblemDropDown")
@@ -447,21 +518,37 @@
                 .then(
                     function (res) {
                         var resInfo = res.body.Data
-                        if (resInfo) {
-                            this.BlackListItems[0].values = res.body.Data;
-                            this.BlackListItems[0].values.unshift({TypeName:'请选择 *', ID:''})
-                            console.log(this.BlackListItems)
-                        }
+                        this.houseList=this.$store.state.houseList
+                        var bLT = this.houseList.BlackListType
+                        this.BlackListItems[0].values = res.body.Data;
+                        this.BlackListItems[0].values.unshift({TypeName:'请选择 *', ID:''})
+                        var BlackName=this.BlackListItems.map(function (item,index) {
+                            var blackName = item.values
+                            for (var i = 0; i < blackName.length; i++){
+                                if(bLT==blackName[i].ID){
+                                    var BlackT = blackName[i].TypeName
+                                    return BlackT
+                                }
+                            }
+                        })
+                        this.BlackListSelectedName2 = BlackName[0]
+                        console.log(this.BlackListSelectedName2)
                     });
+            this.CusList()         //客户资料接口
+            this.AuditHistory()   //稽查历史
+            if(this.blackRemark == 'null'){
+                this.blackRemark = ''
+            }
 
         },
 
         methods: {
-            check(index) {
+            isQuestion(index) {
                 // 先取消所有选中项
                 this.radios.filter((item) => {
                     item.isChecked = false;
                 });
+
                 //再设置当前点击项选中
                 this.question = this.radios[index].value;
                 this.IsProblem = this.radios[index].id;
@@ -470,7 +557,22 @@
                 console.log(this.IsProblem);
                 console.log(this.question)
                 console.log(this.radios[index].isChecked);
-
+                // if(this.IsProblem == 2){
+                //     $('#quesTypeID').show()
+                //     $('#detailID').show()
+                //     $('#statuID').show()
+                //     $('#advanceID').show()
+                // }else if(this.IsProblem == 1){
+                //     $('#quesTypeID').hide()
+                //     $('#detailID').hide()
+                //     $('#statuID').hide()
+                //     $('#advanceID').hide()
+                // }
+                if(this.IsProblem == 2){//无问题
+                    this.haveQuestion=false
+                }else if(this.IsProblem == 1){//有问题
+                    this.haveQuestion=true
+                }
             },
             //选择问题类型
             choosequesType() {
@@ -488,35 +590,24 @@
 
             blackChange() {     //t添加移除 黑名单
                 if (this.radiolist[0] == "加入") {
-                    //加入
-                    // Toast('18888888')
-
-
-                    if (this.blackCheckbox == 1) {
-                        this.blackCheckbox = 0;
-                        // Toast('1111111')
-                        this.blackcheck = "1"
-                    } else if (this.blackCheckbox == 0) {
-                        Toast('000000')
+                    if (this.blackCheckbox == 0) {
                         this.blackCheckbox = 1;
+                        this.blackcheck = "1"
+                    } else if (this.blackCheckbox == 1) {
+                        this.blackCheckbox = 0;
+                        this.blackcheck = ''
+                    }
+                }else if(this.radiolist[0] == "移出"){
+                    if (this.blackCheckbox == 0) {
+                        this.blackCheckbox = 1;
+                        this.blackcheck = "0"
+                    } else if (this.blackCheckbox == 1) {
+                        this.blackCheckbox = 0;
                         this.blackcheck = ''
                     }
                 }
-                // else {
-                //     var y = 0;
-                //     $(".checkblack").click(function () {
-                //         if (y == 0) {
-                //             y = 1;
-                //             this.blackcheck = "1" + ""
-                //         } else if (y == 1) {
-                //             y = 0;
-                //             this.blackcheck = 0 + ""
-                //         }
-                //     })
-                // }
+
             },
-
-
             //--------------------------------------------------处理状态
             //选择处理状态
             chooseProStatus() {
@@ -576,7 +667,8 @@
 
             //调用原生选项
             showActionSheet(conf) {
-                if (zm >= 5) {
+                // if (zm >= 5) {
+                if(this.imgs.length > 4){
                     MessageBox("提示", "只能上传五张图片");
                 } else {
                     var _this = this;
@@ -599,27 +691,27 @@
             //图片加载
             showImgDetail(imgId, imgkey, id, src) {
                 img_index += 1;
+
                 // console.log(img_index);
                 this.imgs.push({
                     imgId: imgId,
                     imgkey: imgkey,
                     id: id,
                     src: src,
-                    img_index: img_index,
+                    img_index: this.imgs.length,
                     w: 400,
                     h: 550
                 });
-                Toast(this.imgs.src)
             },
             //删除图片
             delImg(imgId, imgkey, id, img_index) {
                 var _this = this;
-                var bts = ["是", "否"];
+                var bts = ["否","是"];
                 plus.nativeUI.confirm(
                     "是否删除图片？",
                     function (e) {
                         var i = e.index;
-                        if (i == 0) {
+                        if (i == 1) {
                             var itemname = id + "img-" + imgkey; //429img-F_ZDDZZ
                             var itemvalue = plus.storage.getItem(itemname);
                             //{IMG_20160704_112614,_doc/upload/F_ZDDZZ-IMG_20160704_112614.jpg,file:///storage/emulated/0/Android/data/io.dcloud...../doc/upload/F_ZDDZZ-1467602809090.jpg}
@@ -631,7 +723,6 @@
                                 index,
                                 img_index
                             );
-                            zm--
                         }
                     },
                     "提示",
@@ -657,7 +748,8 @@
             //选取相册图片
             galleryImg(divid) {
                 var _this = this;
-                var n = 5 - zm;
+                // var n = 5 - zm;
+                var n = 5 - this.imgs.length
                 var id = document.getElementById("ckjl.id").value;
 
                 plus.gallery.pick(
@@ -723,24 +815,30 @@
             //点击保存按钮上传图片
 
             savaData() {
-                Toast('aaaa')
                 let _this = this;
-                console.log(this.$store.token + '')
-                console.log(this.houseList.SendJobID)
-                console.log(this.houseList.CusID)
-                // console.log(_this.houseList.CusID)
-                console.log(this.houseList.CusName)
-                console.log(this.quesTypeValue)   //问题类型ID
-                console.log(this.IsProblem)
-                console.log(this.details)
-                console.log(this.advance)
-                console.log(this.blackcheck+'')
-                console.log(this.proStatusValue + '')
-                console.log(this.BlackListValue +'')
-                console.log(this.blackRemark)
-
-
-                //plus.storage.clear();
+                // console.log(this.$store.token + '')
+                // console.log(this.houseList.SendJobID)
+                // console.log(this.houseList.CusID)
+                // console.log(this.houseList.CusName)
+                // console.log(this.quesTypeValue)   //问题类型ID
+                // console.log(this.IsProblem)
+                // console.log(this.details)
+                // console.log(this.advance)
+                // console.log(this.blackcheck+'')
+                // console.log(this.proStatusValue + '')
+                // console.log(this.BlackListValue +'')
+                // console.log(this.blackRemark)
+                if(this.blackCheckbox==1 && this.BlackListValue=='' && this.radiolist[0] == "加入"){
+                    Toast('请选择黑名单性质')
+                    return
+                }
+                else if(this.IsProblem == 2 && this.quesTypeValue == ''){
+                    Toast('请选择问题类型')
+                    return
+                } else if(this.IsProblem == 2 && this.proStatusValue == ''){
+                    Toast('请选择处理状态')
+                    return
+                }else{
                 let wa = plus.nativeUI.showWaiting();
                 let task = plus.uploader.createUpload(
                     _this.$myConfig.host + "/Api/InspectionApp/AddInspectionRec",
@@ -751,36 +849,19 @@
                         if (status == 200) {
                             try {
                                 let info = $.parseJSON(t.responseText);
-                                console.log(info);
-                                //改变全局参数
-                                // _this.$store.operateType = true;
                                 _this.$router.go(-1);
-                                // _this.$store.wordOrderReplyResult = ""; //清空处理结果
+                                zm=0
                                 Toast(info.Message);
                             } catch (e) {
-                                // Toast("文件上传失败");
+
                             }
                             wa.close();
                         } else {
                             wa.close();
-                            Toast("上传失败:" + info.Message);
+                            Toast(info.Message);
                         }
                     }
                 );
-                // task.setRequestHeader('auth',_this.$store.token);
-                // task.setRequestHeader('Content-Type','multipart/form-data');
-                // task.addData("SendJobID","1");//_this.workBillParams.WorkBillID);
-                // task.addData("CusID","1");//_this.workBillParams.WorkBillID);
-                // task.addData("CusName", "1");//_this.workBillParams.WorkBillID);
-                // task.addData("ProblemID","1");//_this.workBillParams.WorkBillID);
-                // task.addData("IsProblem","1");// _this.workBillParams.latestVersion);
-                // task.addData("ProblemDes","1")// _this.workBillParams.FlowInstantID);
-                // task.addData("SuggestDes","1")//_this.workBillParams.FlowToDoTS);
-                // task.addData("IsBlack","1")//_this.$store.UserInfo.UserID + "");
-                // task.addData("ProStatus","1")// _this.$store.UserInfo.OrgID);
-                // task.addData("BlackListType","1")// _this.FinishValue);
-                // task.addData("BlackListRemark","1")
-                // task.start();
                 task.setRequestHeader('auth', _this.$store.token);
                 task.setRequestHeader('Content-Type', 'multipart/form-data');
                 task.addData("SendJobID", _this.houseList.SendJobID + '');//_this.workBillParams.WorkBillID);
@@ -801,59 +882,8 @@
                         key: Math.floor(Math.random() * 1000 + 1000).toString()
                     });
                 }
-
+                }
             },
-
-            // savaData(){
-            //     var _this = this
-            //     console.log(_this.houseList.SendJobID)
-            //         console.log(_this.houseList.CusID)
-            //
-            //         console.log(_this.houseList.CusName)
-            //         console.log(_this.quesTypeValue)
-            //         console.log( _this.IsProblem)
-            //         console.log(_this.details)
-            //         console.log(_this.advance)
-            //         console.log(_this.blackcheck)
-            //         console.log(_this.btnState )
-            //         console.log(_this.blacker )
-            //         console.log(_this.blackRemark )
-            //     var formData = new FormData();
-            //     formData.append('SendJobID', this.houseList.SendJobID);
-            //     formData.append('UserID', '');
-            //     formData.append('CusID', this.houseList.CusID);
-            //     formData.append('CusName', this.houseList.CusName);
-            //     formData.append('ProblemID', this.quesTypeValue);
-            //     formData.append('IsProblem', this.IsProblem);
-            //     // formData.append('IsProblemMeaning',  );
-            //     formData.append('ProblemDes',0);
-            //     formData.append('SuggestDes', this.advance);
-            //     formData.append('IsBlack', this.blackcheck);
-            //     formData.append('ProStatus', this.btnState);
-            //     // formData.append('ProStatusMeaning', this.ProStatusMeaning);
-            //     formData.append('BlackListType', this.blacker);  //黑名单类型
-            //     formData.append('BlackListRemark', this.blackRemark);
-            //
-            //     this.imgs.filter(item=>typeof item != 'string').forEach(item =>{
-            //         formData.append('file', item)
-            //     })
-            //     this.$http.post(_this.$myConfig.host + "/Api/InspectionApp/AddInspectionRec", formData, {
-            //         headers: {
-            //             'auth': _this.$store.token,
-            //             "Content-Type": "multipart/form-data"
-            //         },
-            //     },{emulateJSON: true})
-            //         .then(
-            //         function (res) {
-            //             Toast(res.bodyText);
-            //             // Toast(res);
-            //             // this.msg = res.bodyText;
-            //         },
-            //         function (res) {
-            //             Toast(res.status);
-            //         }
-            //     );
-            // },
 
             // 图片压缩
 
@@ -944,7 +974,15 @@
                         {
                             "CusID": this.$store.state.houseList.CusID,
                         }).then(res => {
-                    this.cusInform = res.body.Data
+                            if(res.body.IsSuccess){
+                                let resInfo = res.body.Data
+                                if(resInfo != ''){
+                                    this.cusInform=resInfo
+                                }
+                            }else{
+
+                            }
+
                 })
             },
 
@@ -957,47 +995,68 @@
                             CurrentYear: this.$store.CurrentYear,
                             CusID: this.$store.state.houseList.CusID,
                             PlanName: '',
-                            CommunityName: '',
+                            Address: '',
                             IsProblem: '',
                         },
                     })
                     .then(res => {
                         // console.log(this.$store.state.houseList.CusID)
                         res.body.Data.forEach(function (item) {
-                            item.InspectionTime = item.InspectionTime.substr(0, 10)
+                            item.InspectionTime = item.InspectionTime.substr(0, 10) +' '+ item.InspectionTime.substr(11,8)
                         })
                         this.auditHistory = res.body.Data
+                        console.log('this.auditHistory')
                         console.log(this.auditHistory)
                     })
+            },
+            recordDetail(index){
+                this.$store.state.reLiDetail = this.auditHistory[index]
+                console.log(this.$store.state.reLiDetail)
             },
             //拨打电话
             tel() {
                 plus.device.dial(this.ContactPhone, true);
             },
-
-
-
         },
-        // watch: {
-        //     selected(val) {
-        //         if (this.selected == "audit_inspection" || this.selected == "audit_user") {
-        //             this.audittitle = "稽查—住户详情"
-        //         } else if (this.historyContent == true) {
-        //             //在监听之后才能改变
-        //             // this.audittitle = "稽查—历史详情"
-        //             // console.log(1111)
-        //         } else {
-        //             // this.audittitle = "稽查—住户详情"
-        //         }
-        //     },
-        // }
+
     }
 </script>
 <style scoped>
+    .cusNews{
+        padding-bottom:0.1rem
+    }
+    .content_list{
+        border-bottom: 1px solid #E0E0E0;
+        background: #fff
+    }
+    .people_name {
+        margin: 0;
+    }
+    .people_remark{
+        margin: 0;
+        padding:10px 0;
+    }
+    .people_name > div {
+        text-align: left;
+        width: 15%;
+        display: inline-block;
+        font-size: 0.14rem;
+        color: #232323;
+        vertical-align: top;
+    }
+
+    .people_name > span {
+        max-width: 80%;
+        display: inline-block;
+        font-size: 0.14rem;
+        color: #595959;
+    }
+
+
     .audit_family_information {
         background-color: #F9F9F9;
         height: 100%;
-        font-size: 13px;
+        font-size: 0.14rem;
         /*padding-right: 30px;*/
     }
 
@@ -1022,61 +1081,62 @@
         margin: 0 auto;
         margin-top: 44px;
     }
+    .item {
+        display: inline-block;
+    }
+    .mint-tab-container {
+        height: 100%;
+        overflow: visible;
+    }
+    .nav {
+        background-color: #efeff4;
+        padding: 0;
+        text-align: center;
+        position: fixed;
+        top: 0.38rem;
+        width: 100%;
+        z-index: 9;
+    }
+    .nav .tab_btn {
+        width: 100%;
+        background: #fff;
+    }
+    .nav .tab_btn > div {
+        width: 33.333%;
+        text-align: center;
+        /* padding:0 0.08rem;
+        margin:0 0.1rem; */
+        height: 0.44rem;
+        line-height: 0.44rem;
+        float: left;
+        font-size: 0.14rem;
+        color: #666;
+        background-color: #fff;
+    }
+    .checked {
+        color: #49a9ea !important;
+        border-bottom: 0.02rem solid #49a9ea;
+        box-sizing: border-box;
+    }
+
+    .tab_btn {
+        margin: 0 auto;
+        display: inline-block;
+    }
 
     .mint-tab-container {
-        margin-top: 10px;
-        color:#232323;
+        height: 100%;
+        overflow: visible;
     }
 
     .radio-box {
         margin-right: 15px;
-    }
-
-    /*.mint-popup {*/
-    /*    text-align: center;*/
-    /*    background-color: #fff;*/
-    /*    color: #000;*/
-    /*    border-radius: 8px;*/
-    /*    !**!*/
-    /*}*/
-
-    /*!*弹框标题样式*!*/
-    /*.pickerTitle {*/
-    /*    width: 200px;*/
-    /*    color: #fff;*/
-    /*    background-color: #49A9EA;*/
-    /*    height: 50px;*/
-    /*    line-height: 35px;*/
-    /*    font-size: 17px;*/
-    /*    padding: 10px;*/
-    /*    border-top-left-radius: 8px;*/
-    /*    border-top-right-radius: 8px;*/
-
-    /*}*/
-
-    /*.picker-slot {*/
-    /*    font-size: 14px;*/
-    /*    margin: 10px;*/
-    /*    overflow: hidden;*/
-    /*    position: relative;*/
-    /*    max-height: 100%;*/
-    /*}*/
-
-    .sendimg {
-        width: 50px;
-        height: 50px;
+        display: inline-block;
     }
 
     .mint-field.is-textarea .mint-cell-value {
         padding: 5px 10px;
     }
-
-    .reply_content {
-        margin-top: 0.15rem;
-        height: 86%;
-        overflow: scroll;
-    }
-
     .mui-table-view-cell > .step_title {
         background-color: #49a9ea;
         color: #fff;
@@ -1089,8 +1149,8 @@
     }
 
     .mui-table-view-cell {
-        padding: 10px 15px;
-        line-height:24px;
+        padding: 7px 15px;
+        line-height:34px;
         background-color: #fff;
     }
 
@@ -1104,7 +1164,7 @@
     }
     .mui-table-view-cell > span {
         float: right;
-        margin-top: -6px;
+
         max-width: 75%;
         color: #595959;
     }
@@ -1154,11 +1214,11 @@
 
     .mui-table-view-cell > div.content {
         width: 75%;
-        font-size: 13px;
+        font-size:0.14rem;
     }
 
     .mui-table-view-cell > div.content #Image {
-        float: right;
+        float: left;
     }
 
     /*.photoShow.mint-popup {*/
@@ -1169,7 +1229,7 @@
     /*    width: 100%;*/
     /*}*/
     .eachplan_content{
-        font-size: 13px !important;
+        font-size:0.14rem !important;
     }
     .tempBtn {
         margin-top: 10px;
@@ -1228,7 +1288,7 @@
     }
 
     .submit_btn {
-        position: fixed;
+        position: absolute;
         bottom: 0;
     }
 
@@ -1250,13 +1310,95 @@
 
     .mint-cell-wrapper {
         padding: 0;
+        background-image: none !important
     }
     .isQues{
         width:40%;
         display: inline-block;
     }
     .status_deal{
-        width: 60%;
+        width: 58%;
         display: inline-block;
     }
+    .address{
+        padding-top: 5px;
+    }
+    .pending_auditnews{
+        margin-bottom:51px;
+    }
+    #inspec{
+        overflow: scroll;
+    }
+
+    /*标签*/
+    .status_icon {
+        height: 0.25rem;
+        line-height: 0.25rem;
+        text-align: center;
+        border-radius: 0.04rem;
+        color: #fff;
+        display: inline-block
+    }
+
+    .status_qt {
+        width: 0.4rem;
+        background: #FF6060;
+        margin-right: 0.05rem;
+    }
+
+    .status_bt {
+        width: 0.4rem;
+        background: #FFCC01;
+        margin-right: 0.05rem;
+    }
+
+    .status_h {
+        width: 0.25rem;
+        background: #676767;
+        margin-right: 0.05rem;
+    }
+
+    .status_q1 {
+        width: 0.25rem;
+        background: #ccc;
+        margin-right: 0.05rem;
+    }
+
+    .status_q2 {
+        width: 0.25rem;
+        background: #FA6400;
+        margin-right: 0.05rem;
+    }
+
+    .status_wg {
+        width: 0.4rem;
+        background: #ccc;
+        margin-right: 0.05rem;
+    }
+
+    .status_zc {
+        width: 0.4rem;
+        background: #2FB91E;
+        margin-right: 0.05rem;
+    }
+
+    .name_icon {
+        display: flex;
+        /*font-size:12px ;*/
+        /*flex-wrap: wrap;*/
+        justify-content: space-between;
+        /*position: absolute;*/
+    }
+    .icon_status {
+        display: inline-block;
+        position: relative;
+        float: right;
+        margin-right: 10px;
+        width:33%;
+        font-size: 0.12rem;
+    }
+    .mint-tab-container-wrap{
+        background: #fff
+    }
+
 </style>

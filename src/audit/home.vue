@@ -470,7 +470,7 @@
         color:#232323;
         font-size: 0.14rem;
         padding:0.09rem 0.15rem;
-        line-height: 0.3rem;
+        line-height: 0.25rem;
         text-align: center
     }
     .blue{

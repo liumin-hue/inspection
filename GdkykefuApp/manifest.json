@@ -1,9 +1,9 @@
 {
     "@platforms": ["android", "iPhone", "iPad"],
-    "id": "H5AA1B4E9",/*应用的标识，创建应用时自动生成，勿手动修改*/
+    "id": "H530FB27D",/*应用的标识，创建应用时自动生成，勿手动修改*/
     "name": "稽查",/*应用名称，程序桌面图标名称*/
     "version": {
-        "name": "1.0",/*应用版本名称*/
+        "name": "3.0.1",/*应用版本名称*/
         "code": ""
     },
     "description": "",/*应用描述信息*/
@@ -129,9 +129,9 @@
                 "android": {
                     "mdpi": "", /*普通屏启动图片，分辨率：240x282*/
                     "ldpi": "", /*大屏启动图片，分辨率：320x442*/
-                    "hdpi": "", /*高分屏启动图片，分辨率：480x762*/
-                    "xhdpi": "", /*720P高分屏启动图片，分辨率：720x1242*/
-                    "xxhdpi": ""/*1080P高分屏启动图片，分辨率：1080x1882*/
+                    "hdpi": "C:/Users/刘/Desktop/AuditApp/static/images/客服移动端切图/登录页/host.png", /*高分屏启动图片，分辨率：480x762*/
+                    "xhdpi": "C:/Users/刘/Desktop/AuditApp/static/images/客服移动端切图/登录页/host.png", /*720P高分屏启动图片，分辨率：720x1242*/
+                    "xxhdpi": "C:/Users/刘/Desktop/AuditApp/static/images/客服移动端切图/登录页/host.png"/*1080P高分屏启动图片，分辨率：1080x1882*/
                 }
             }
         }

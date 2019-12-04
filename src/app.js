@@ -52,6 +52,7 @@ import 'viewerjs/dist/viewer.css'
 
 //Audit项目
 import Host from './audit/host.vue'
+// import login from './audit/login.vue'//登录页
 import login from './audit/login.vue'//登录页
 import home from './audit/home.vue'//首页
 import AuditRecord from './audit/AuditRecord.vue'//稽查记录
@@ -127,11 +128,11 @@ var router = new VueRouter({
         { path: "/home", component: home, meta: { keepAlive: true } },
         { path: "/AuditRecord", component: AuditRecord },
         { path: "/Blacklist", component: Blacklist },
-        { path: "/PendingAudit", component: PendingAudit },
-        { path: "/PendingDeal", component: PendingDeal },
+        { path: "/PendingAudit",name:'PendingAudit', component: PendingAudit },
+        { path: "/PendingDeal", name:'PendingDeal', component: PendingDeal },
         { path: "/InspectionDetail", component: InspectionDetail },
         { path: "/inspection", component: Inspection },
-        { path: "/dealAudit", component: dealAudit },
+        { path: "/dealAudit", component: dealAudit, meta: { keepAlive: false } },
         { path: "/audit/changePassword", component: ChangePassword, meta: { keepAlive: false } },
         { path: "/audit/versions", component: Versions, meta: { keepAlive: false } },
         { path: "/audit/changeInfo", component: ChangeInfo, meta: { keepAlive: false } },

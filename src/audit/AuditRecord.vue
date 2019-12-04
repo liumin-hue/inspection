@@ -2,25 +2,25 @@
     <div class="audit_record">
         <div class="black_select" style="position: fixed; top: 0px">
         <mt-header title="稽查记录">
-            <mt-button icon="back" @click="back"></mt-button>
-            <div slot="right" class="select">
-                <details close>
-                    <summary><img src="../../static/images/audit/record/select.png"></summary>
-                    <div class="tongzhi">
-                        <ul class="xiaoxi">
+            <mt-button icon="back" @click="back" slot="left"></mt-button>
+            <div slot="right">
+                    <div  @click="summary" class="quesSelect"><img src="../../static/images/audit/record/select.png" id="summary"></div>
+                    <div class="tongzhi" >
+                        <ul class="xiaoxi" style="display: none">
                             <li class="hao1" ><mt-button @click="hao1" v-model="value" value="">全部</mt-button></li>
                             <li class="hao2" ><mt-button @click="hao2" v-model="value" value="无" >无问题</mt-button></li>
                             <li class="hao3" ><mt-button @click.native="hao3" v-model="value" value="有">有问题</mt-button></li>
                         </ul>
                     </div>
-                </details>
             </div>
         </mt-header>
         <div class="searchselect">
             <div class="searchdiv">
-                <select class="select" v-model="SourcePath" @click="searchSelect" >
+                <select class="select" v-model="SourcePath" @change="searchSelect" >
+
                     <option v-bind:value="option.id" v-for="option in SourcePathSelect" >{{option.val}}</option>
                 </select>
+                <span class="mui-icon mui-icon-arrowdown"></span>
                 <input type="search" class="search" v-model="searchIf">
                 <i class="mintui mintui-search" @click="auditPlan"></i>
             </div>
@@ -61,6 +61,7 @@
             <div class="foo">
                 <router-link to="/audit/changeInfo">
                     <mt-tab-item id="设置">
+                        <span class="tip" v-show="versions?true:false"></span>
                         <img slot="icon" src="../../static/images/audit/record/set.png">
                         设置
                     </mt-tab-item>
@@ -75,6 +76,7 @@
     export default {
         data() {
             return {
+                versions:"",//是否需要升级，需要升级则显示红点
                 replyFinishList: false,
                 slots: [{values: ['全部', '无问题', '有问题']}],
                 finishText: "",
@@ -107,6 +109,7 @@
                 //稽查计划列表，小区列表
             this.searchSelect()
             this.auditPlan()
+            this.getHomeData()//获取新版本号
 
         },
         methods: {
@@ -119,10 +122,14 @@
             backhome() {
                 this.$router.push('/home')
             },
+            summary(){
+                $(".xiaoxi").show();
+            },
             hao1() {
                 $(".hao1").addClass("hao");
                 $(".hao2").removeClass("hao");
                 $(".hao3").removeClass("hao");
+                $(".xiaoxi").hide();
                 this.searchSelect()
                 this.searchques=this.allques
                 this.auditPlan()
@@ -132,6 +139,7 @@
                 $(".hao2").addClass("hao");
                 $(".hao1").removeClass("hao");
                 $(".hao3").removeClass("hao");
+                $(".xiaoxi").hide();
                 this.searchques=this.yesques
                 this.auditPlan()
             },
@@ -139,6 +147,7 @@
                 $(".hao3").addClass("hao");
                 $(".hao1").removeClass("hao");
                 $(".hao2").removeClass("hao");
+                $(".xiaoxi").hide();
                 this.searchques=this.noques
                 console.log(this.searchques)
                 this.auditPlan()
@@ -147,22 +156,23 @@
                 if(this.SourcePath==1){
                     this.planName=this.searchIf
                     this.searchadd=''
-                    this.searchques=''
+                    // this.searchques=''
                 }
                 else if (this.SourcePath==2){
                     this.planName=''
                     this.searchadd=this.searchIf
-                    this.searchques=''
+                    // this.searchques=''
                 }
             },
             auditPlan(){
+                this.searchSelect()
                 this.$http
                     .get(this.$myConfig.host + '/Api/InspectionApp/GetAppInspectionRecList',{
                         params:{
                             CurrentYear:this.$store.CurrentYear,
                             CusID:'',
                             PlanName:this.planName,
-                            CommunityName:this.searchadd ,
+                            Address:this.searchadd ,
                             IsProblem:this.searchques,
                         },
                     })
@@ -184,19 +194,68 @@
             recordDetail(index){
                 this.$store.state.reLiDetail = this.datas[index]
                 console.log(this.$store.state.reLiDetail)
-            }
+            },
+            getHomeData(){
+                var _this = this;
+
+                //获取首页数据统计
+                this.$http
+                    .get(this.$myConfig.host + "/Api/InspectionApp/GetFirstPageData")
+                    .then(
+                        function (res) {
+                            let resInfo = $.parseJSON(res.bodyText);
+                            if (resInfo.IsSuccess) {
+                                var Version=resInfo.Data.Version
+                                var oldVersions=_this.$store.versions
+                                console.log(oldVersions)
+
+                                // 判断版本号，新老版本号比较
+                                if (Version.split('.').join('') > oldVersions.split('.').join('')) {
+                                    _this.versions = true
+                                    _this.$store.newVersions = Version
+                                } else {
+                                    _this.versions = false
+                                }
+                            
+                            } else {
+                                Toast(resInfo.Message);
+                            }
+                        },
+                        function (err) {
+                            Toast("请检查您的网络");
+                        }
+                    );
+
+
+            },
         }
     }
 </script>
 <style scoped>
+/* 版本提示图标 */
+.tip {
+    background-color: #f44336;
+    display: block;
+    position: absolute;
+    width: 0.1rem;
+    height: 0.1rem;
+    border-radius: 50%;
+    top: 0.05rem;
+    right: 0.2rem;
+}
 .audit_record{
     font-size: 13px;
+}
+.mui-icon{
+    line-height: 28px;
+    font-weight: bold;
 }
 .mintui-search{
     padding: 7px 11px 0 0;
 }
 .select option{
     border: none;
+    font-size: 14px;
     height: 35px;
     line-height: 35px;
 }
@@ -205,8 +264,8 @@
 }
 .plan{
     color:#232323;
-    font-size: 15px;
-    font-weight: bold;
+    font-size: 14px;
+    font-weight:540;
 }
     .isQues{
         width:40%;
@@ -216,4 +275,16 @@
         width: 60%;
         display: inline-block;
     }
+.mint-header .mint-button{
+    height: 46px;
+}
+.quesSelect{
+    line-height: 41px;
+    height:30px;
+}
+.quesSelect img{
+    width:24px;
+    height:19px;
+    /*height: 30px;*/
+}
 </style>

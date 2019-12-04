@@ -19,6 +19,12 @@
                     <div>地址：</div>
                     <span>{{CusAddress}}</span>
                 </div>
+<!--                <div class="model_bottom mui-table-view-cell">-->
+<!--                    <span class="isQues"><span class="ques">-->
+<!--                        <span class="texttitle">姓名：</span>{{CusName}}</span>-->
+<!--                    </span>-->
+<!--                    <span class="status_deal"><span class="texttitle">稽查时间：</span>{{OperationTime}}</span>-->
+<!--                </div>-->
                 <div class="mui-table-view-cell">
                     <div>姓名：</div>
                     <span>{{CusName}}</span>
@@ -32,11 +38,8 @@
                     <span>{{IsProblemMeaning}}</span>
                 </div>
                 <div class="mui-table-view-cell">
-                    <div>处理状态：</div>
-                    <span v-if="ProStatus==0">{{strProStatus}}</span><!-- 无问题 -->
-                    <span v-if="ProStatus==1" style="color:green">{{strProStatus}}</span><!-- 已处理 -->
-                    <span v-if="ProStatus==2" style="color:red">{{strProStatus}}</span><!-- 未处理 -->
-                    <span v-if="ProStatus==3" style="color:blue">{{strProStatus}}</span><!-- 待处理 -->
+                    <div>问题类型：</div>
+                    <span>{{Problem}}</span>
                 </div>
                 <div class="mui-table-view-cell">
                     <div>详情：</div>
@@ -46,12 +49,19 @@
                     <div>图片：</div>
                     <span>
                         <!-- {{$data.ImgList}} -->
-                        <div >
-                            <viewer v-for="item in ImagList" style="margin: 0;padding: 0;">
+                        <div class="Imageclass">
+                            <viewer v-for="item in ImagList" style="margin: 0;padding-right: 5px; display: inline-block" >
                                 <img style="width: 15vw;height: 15vw;" :src="item">
                             </viewer>
                         </div>
                     </span>
+                </div>
+                <div class="mui-table-view-cell">
+                    <div>处理状态：</div>
+                    <span v-if="ProStatus==0">{{strProStatus}}</span><!-- 无问题 -->
+                    <span v-if="ProStatus==1" style="color:green">{{strProStatus}}</span><!-- 已处理 -->
+                    <span v-if="ProStatus==2" style="color:red">{{strProStatus}}</span><!-- 未处理 -->
+                    <span v-if="ProStatus==3" style="color:blue">{{strProStatus}}</span><!-- 待处理 -->
                 </div>
                 <div class="mui-table-view-cell">
                     <div>处理意见：</div>
@@ -76,6 +86,7 @@
                 OperationTime:"",//稽查时间
                 IsProblemMeaning:"",//是否有问题
                 ProStatus:"",//处理状态
+                Problem:'',
                 ProblemDes:"",//详情
                 ImagList:[],//图片
                 SuggestDes:"",//处理意见
@@ -95,6 +106,7 @@
             this.strProStatus = _this.$store.state.reLiDetail.strProStatus;//处理状态  从上一页传过来的
             this.ProStatus = _this.$store.state.reLiDetail.ProStatus;//处理状态  从上一页传过来的  判断处理状态值 来 添加class颜色
             this.ProblemDes = _this.$store.state.reLiDetail.ProStatus;//详情  从上一页传过来的
+            this.Problem = _this.$store.state.reLiDetail.Problem;//详情  从上一页传过来的
             this.ImgList = _this.$store.state.reLiDetail.ProStatus;//详情  从上一页传过来的
             this.SuggestDes = _this.$store.state.reLiDetail.ProStatus;//处理意见  从上一页传过来的
 
@@ -116,19 +128,13 @@
                             _this.ProStatusMeaning = resInfo.Data.ProStatusMeaning//处理状态
                             _this.ProblemDes = resInfo.Data.ProblemDes//详情
                             _this.SuggestDes = resInfo.Data.SuggestDes//处理意见
+                            _this.Problem = resInfo.Data.Problem//处理意见
+                            _this.ProStatus = resInfo.Data.ProStatus//处理意见
                             var ImgList = []
                             var ImgList = resInfo.Data.ImgList//图片
                             console.log(ImgList)
-                             ImgList.forEach(function (item) {
+                            _this.ImagList = ImgList.map(function (item) {
                                 var imgItem = [_this.$myConfig.host +"/image/" + item]
-                                 console.log('imgitm长度')
-                                 console.log(imgItem.length)
-                                 console.log(imgItem)
-                                 if(imgItem.length<1){
-                                     _this.ImagList=''
-                                 }else if(imgItem.length==1){
-                                     _this.ImagList=imgItem
-                                 }
                                 return imgItem
                             })
                             console.log(_this.ImagList)
@@ -334,5 +340,7 @@
     .valueLength {
         text-align: right;
     }
-
+.Imageclass{
+    display: inline-block;
+}
 </style>

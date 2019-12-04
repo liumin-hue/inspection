@@ -1,9 +1,10 @@
 <!--wode -->
 <template>
-    <div>
-        <div class="audit_family_information">
+    <div >
+        <div class="audit_family_information" >
+
             <!-- 页面导航 稽查  稽查历史  用户信息-->
-            <mt-header title="待处理" fixed>
+            <mt-header :title="titlename" fixed>
                 <mt-button icon="back" slot="left" @click="back"></mt-button>
                 <span slot="right" @click="tel()" v-if="ContactPhone == ''?false:true">
                 <mt-button class="tel_btn"></mt-button>
@@ -14,14 +15,15 @@
                 <mt-tab-item id="audit_history" class="audit_history">客户资料</mt-tab-item>
                 <mt-tab-item id="audit_user" class="audit_user_news">稽查记录</mt-tab-item>
             </mt-navbar>
-            <mt-tab-container v-model="selected">
+            <mt-tab-container v-model="selected" swipeable>
                 <!--    稽查-->
                 <mt-tab-container-item id="audit_inspection" class="audit_form">
+                    <div id="inspec">
                     <div class="pending_auditnews">
-                        <ul>
+                        <ul >
                             <div style="height: 76px;width: 100%;"></div>
+<!--                            <pre>{{$data.proStatusItems}}</pre>-->
                             <li class="content_list">
-
                                 <router-link to="/inspection">
                                     <div class="people_name"><span class="status">地址：</span>{{this.houseList.Address}}
                                     </div>
@@ -31,30 +33,35 @@
                             </li>
                         </ul>
 
+                        <div class="mui-table-view-cell">
+                            <div>是否有问题</div>
+                            <span>
+                                <div class="radio-box" v-for="(item,index) in radios" :key="item.id">
+                                    <span class="radio" :class="{'on':item.isChecked}"></span>
+                                    <input v-model="question" :value="item.value" class="input-radio" :checked='item.isChecked' @click="isQuestion(index)" type="radio">
+                                    {{item.label}}
+                                </div>
+                            </span>
+                        </div>
 
-                        <mt-cell title="是否有问题">
-                            <div class="radio-box" v-for="(item,index) in radios" :key="item.id">
-                                <span class="radio" :class="{'on':item.isChecked}"></span>
-                                <input v-model="question" :value="item.value" class="input-radio"
-                                       :checked='item.isChecked' @click="check(index)" type="radio">{{item.label}}
-                            </div>
-                        </mt-cell>
 
-                    </div>
-                    <div class="mui-table-view-cell" @click="choosequesType()">
-                        <div>问题类型</div>
-                        <span>{{quesTypeSelectedName}}<span class="mui-icon mui-icon-arrowdown"></span></span>
-                    </div>
-                    <!-- 问题类型下拉 -->
-                    <mt-popup v-model="quesType" popup-transition="popup-fade" position="bottom" class="bottomPicker">
-                        <div class="pickerTitle">请选择问题类型</div>
-                        <mt-picker :slots="quesTypeItems" @change="quesTypeChange" value-key="TypeName"></mt-picker>
-                    </mt-popup>
-                    <mt-field label="详情"
-                              type="textarea" rows="4"
-                              v-bind:value="optionID"
-                              v-model="details">
-                    </mt-field>
+
+                        <div id="quesTypeID" class="mui-table-view-cell" @click="choosequesType()" v-show="!haveQuestion">
+                            <div>问题类型</div>
+                            <span>{{quesTypeSelectedName}}<span class="mui-icon mui-icon-arrowdown"></span></span>
+                        </div>
+                        <!-- 问题类型下拉 -->
+                        <mt-popup v-model="quesType" popup-transition="popup-fade" position="bottom" class="bottomPicker">
+                            <div class="pickerTitle">请选择问题类型</div>
+                            <mt-picker :slots="quesTypeItems" @change="quesTypeChange" value-key="TypeName"></mt-picker>
+                        </mt-popup>
+
+
+                        <div class="mui-table-view-cell" id="detailID" v-show="!haveQuestion">
+                            <mt-field  label="详情" type="textarea" rows="4" v-bind:value="details" v-model="details" :attr="{ maxlength: 100 }"
+                                       style="padding-left:0.06rem;">
+                            </mt-field>
+                        </div>
 
                     <div class="mui-table-view-cell">
                         <div class="filesend">上传照片</div>
@@ -63,25 +70,35 @@
                             <div class="collapse-content">
                                 <form>
                                     <label class="row-label"></label>
+
                                     <div id='ImageS' class="row image-list clearfix">
-                                        <span class="uploadImage" id="Image" @click="showActionSheet()"></span>
+
+                                        <viewer class="image-item" v-for="(img,index) in Image" :key="img.id">
+                                            <img class="preview-img" @click="$preview.open(index, Image)"
+                                                 :src="img">
+                                            <span class="del_btn"
+                                                  @click="delImage(index)"></span>
+                                            <div class="fa fa-times-circle"></div>
+                                        </viewer>
+
                                         <div :id="imgID" class="image-item" v-for="(img,index) in imgs" :key="img.id">
                                             <img id="picBig" class="preview-img" @click="$preview.open(index, imgs)"
-                                                 :src="img">
+                                                 :src="img.src">
                                             <span class="del_btn"
                                                   @click="delImg(img.imgId,img.imgkey,img.id,img.img_index)"></span>
                                             <div class="fa fa-times-circle"></div>
                                         </div>
+                                        <span class="uploadImage" id="Image" @click="showActionSheet()"></span>
                                     </div>
                                 </form>
                             </div>
                         </div>
                     </div>
 
-                    <div class="mui-table-view-cell" @click="chooseProStatus()">
-                        <div>处理状态</div>
-                        <span>{{proStatusSelectedName}}<span class="mui-icon mui-icon-arrowdown"></span></span>
-                    </div>
+                        <div id="statuID" class="mui-table-view-cell" @click="chooseProStatus()" v-show="!haveQuestion">
+                            <div>处理状态</div>
+                            <span>{{proStatusSelectedName}}<span class="mui-icon mui-icon-arrowdown"></span></span>
+                        </div>
                     <!-- 处理状态下拉 -->
                     <mt-popup v-model="proStatusList" popup-transition="popup-fade" position="bottom"
                               class="bottomPicker">
@@ -89,28 +106,37 @@
                         <mt-picker :slots="proStatusItems" @change="proStatusChange" value-key="Name"></mt-picker>
                     </mt-popup>
 
-                    <mt-field label="处理意见" type="textarea" rows="4" v-model="advance"
-                              class="detailscss"></mt-field>
+                        <div class="mui-table-view-cell" id="advanceID" v-show="!haveQuestion">
+                            <mt-field  label="处理意见" type="textarea" rows="4" v-model="advance" :attr="{ maxlength: 100 }" style="padding-left:0.06rem"></mt-field>
+                        </div>
 
-                    <div class="mui-table-view-cell" @click="chooseBlackList()">
-                        <div>黑名单性质</div>
-                        <span>{{BlackListSelectedName}}<span class="mui-icon mui-icon-arrowdown"></span></span>
-                    </div>
-                    <!-- 黑名单性质下拉 -->
-                    <mt-popup v-model="BlackList" popup-transition="popup-fade" position="bottom" class="bottomPicker">
-                        <div class="pickerTitle">请选择黑名单性质</div>
-                        <mt-picker :slots="BlackListItems" @change="BlackListChange" value-key="TypeName"></mt-picker>
-                    </mt-popup>
+                        <div class="mui-table-view-cell">
+                            <div>黑名单</div>
+                            <span><mt-checklist v-model="blackcheck" :options="radiolist" @change="blackChange" class="checkblack" style="height:0.23rem"></mt-checklist></span>
+                        </div>
 
-                    <mt-cell title="黑名单" class="detailscss" >
-                        <!--              <mt-radio v-model="value" :options="radiolist"></mt-radio>-->
-                        <mt-checklist v-model="blackcheck" :options="radiolist" @change="blackChange" class="checkblack"></mt-checklist>
-                    </mt-cell>
+                        <div class="mui-table-view-cell" v-show="!blackShow">
+                            <div>黑名单性质</div>
+                            <span>{{BlackListSelectedName}}<span class="mui-icon mui-icon-arrowdown"></span></span>
+                        </div>
 
-                    <mt-field label="黑名单备注" type="textarea" rows="4" v-model="blackRemark"
-                              class="black_remark"></mt-field>
+                        <div id="popselet" class="mui-table-view-cell" @click="chooseBlackList()" v-show="blackShow">
+                            <div>黑名单性质</div>
+                            <span>{{BlackListSelectedName}}<span class="mui-icon mui-icon-arrowdown"></span></span>
+                        </div>
+                        <!-- 黑名单性质下拉 -->
+                        <mt-popup v-model="BlackList" popup-transition="popup-fade" position="bottom" class="bottomPicker" >
+                            <div class="pickerTitle">请选择黑名单性质</div>
+                            <mt-picker :slots="BlackListItems" @change="BlackListChange" value-key="TypeName"></mt-picker>
+                        </mt-popup>
+
+                        <div class="mui-table-view-cell" >
+                            <mt-field label="黑名单备注" type="textarea" rows="4" v-model="blackRemark" class="black_remark"  :attr="{ maxlength: 100 }" :readonly="read" style="padding-left:0.06rem"></mt-field>
+                        </div>
+
                     <mt-button type="primary" size="large" @click="savaData" class="submit_btn">确定</mt-button>
-
+                    </div>
+                    </div>
                 </mt-tab-container-item>
 
                 <!--     客户资料-->
@@ -121,14 +147,41 @@
                             <div class="cusNews">
                                 <div class="people_name"><span class="status">地址：</span>{{this.houseList.Address}}
                                 </div>
-                                <div class="cusname"><span class="status">姓名：</span>{{this.cusInform.CusName}}</div>
+                                <div class="cusname"><span class="status">姓名：</span>{{this.cusInform.CusName}}
+                                    <div class="icon_status">
+                                        <div v-if="HeatStatus==0" class="status_icon status_zc">
+                                            {{HeatStatusMeaning}}
+                                        </div>
+                                        <div v-if="HeatStatus==1" class="status_icon status_bt">
+                                            {{HeatStatusMeaning}}
+                                        </div>
+                                        <div v-if="HeatStatus==2" class="status_icon status_qt">
+                                            {{HeatStatusMeaning}}
+                                        </div>
+                                        <div v-if="HeatStatus==3" class="status_icon status_wg">
+                                            {{HeatStatusMeaning}}
+                                        </div>
+                                        <div v-if="IsArrears ==1" class="status_icon status_q2">欠</div>
+                                        <div v-if="IsArrears ==0" class="status_icon status_q1">欠</div>
+                                        <div v-if="IsCheckBlack==1" class="status_icon status_h">
+                                            {{IsCheckBlackMeaning}}
+                                        </div>
+                                        <!--                            <div v-if="item.IsCheckBlack==0" class="status_icon status_h">{{item.IsCheckBlackMeaning}}</div>-->
+                                    </div>
+                                </div>
+
                             </div>
                             <div class="model_bottom">
-                                <div class="phone"><span class=""><span class="status">客户卡号：</span>{{this.cusInform.CusCardNO}}</span>
+                                <div class="phone"><span class=""><span class="status">房间号：</span>{{this.cusInform.RoomID}}</span>
                                 </div>
                                 <div class="phone"><span class="status">客户类型：</span>{{this.cusInform.strCusType}}</div>
                             </div>
-                            <div class="people_name"><span class="status">备注：</span>{{this.houseList.Address}}</div>
+                            <div class="model_bottom">
+                                <div class="phone"><span class=""><span class="status">用热状态：</span>{{HeatStatusMeaning}}</span>
+                                </div>
+                                <div class="phone"><span class="status">是否是黑名单：</span>{{isCheckBlack}}</div>
+                            </div>
+                            <div class="people_remark"><span class="status">备注：</span>{{this.cusInform.Remark}}</div>
                             <!--                            <mt-field label="备注" type="textarea" rows="3" class="cus_remark"-->
                             <!--                                      readonly>{{this.cusInform.Remark}}</mt-field>-->
                         </li>
@@ -140,25 +193,26 @@
                 <mt-tab-container-item id="audit_user">
                     <ul>
                         <div style="height: 87px;width: 100%;"></div>
-                        <router-link></router-link>
-                        <li v-for="(item,index) in auditHistory" :key="index"
-                            class="bolt_argument">
-                            <div class="plan">
-                                <span class="status">稽查计划：</span><span>{{item.PlanName}}</span>
-                            </div>
-                            <div class="model_bottom">
-                                <div class="isQues">
-                                    <span class="status">供热年度：</span>{{item.CurrentYear}}
+                        <router-link to="/InspectionDetail" >
+                            <li v-for="(item,index) in auditHistory" :key="index"
+                                class="bolt_argument" @click="recordDetail(index)">
+                                <div class="plan">
+                                    <span class="status">稽查计划：</span><span>{{item.PlanName}}</span>
                                 </div>
-                                <div class="status_deal"><span class="status">稽查时间：</span>{{item.InspectionTime}}</div>
-                            </div>
-                            <div class="model_bottom">
-                                <div class="isQues"><span class="status">是否有问题：</span>{{item.strIsProblem}}
+                                <div class="model_bottom">
+                                    <div class="isQues">
+                                        <span class="status">供热年度：</span>{{item.ChargeYear}}
+                                    </div>
+                                    <div class="status_deal"><span class="status">稽查时间：</span>{{item.InspectionTime}}</div>
                                 </div>
-                                <div class="status_deal"><span class="status">处理状态：</span>{{item.strProStatus}}</div>
-                            </div>
-                            <div class="address"><span class="status">稽查人员：</span>{{item.InspectionPersonName}}</div>
-                        </li>
+                                <div class="model_bottom">
+                                    <div class="isQues"><span class="status">是否有问题：</span>{{item.strIsProblem}}
+                                    </div>
+                                    <div class="status_deal"><span class="status">处理状态：</span>{{item.strProStatus}}</div>
+                                </div>
+                                <div class="address"><span class="status">稽查人员：</span>{{item.InspectionPersonName}}</div>
+                            </li>
+                        </router-link>
                     </ul>
                 </mt-tab-container-item>
 
@@ -173,26 +227,35 @@
     var w = null;
     var procinstid = 0;
     var lfs = null;
-    var zm = 0;
+    // var zm = 0;
+    var hdzm = 0
     var img_index = 0;
     var pageSource = "";
     export default {
         data() {
             return {
+                titlename:'待处理',
                 ImgList:[],
                 auditHistory: [],
                 question: '', //初始选择有问题
-                houseList: [],       //每户信息
+                houseList: [], //每户信息
+                HeatStatus:'',
+                HeatStatusMeaning:'',
+                IsArrears:'',
+                IsCheckBlack:'',
+                IsCheckBlackMeaning:'',
                 cusInform: [],     //客户资料
                 communityID: '',
-                IsProblem: '',
+                IsProblem: 2,
                 planName: '',
                 ContactPhone: "",//电话
                 questionList: [],  //问题列表
                 optionRemark: '',
                 optionTypename: '',
                 optionID: '',
+                read:false,
                 SourcePath: '',//代收渠道默认选中值
+                blackShow:true,
                 radios: [
                     {
                         id: 2,
@@ -207,7 +270,7 @@
                         isChecked: false,
                     }
                 ], //有问题  无问题  单选按钮
-                blackCheckbox:1,
+                blackCheckbox:0,
                 slotsDeal: [],  //问题类型/处理状态
                 questionState: false,  //问题类型  点击显示隐藏的变量
                 changeDealState: false, //处理状态  点击显示隐藏的变量
@@ -226,7 +289,8 @@
                 BlackListType: '',
                 BlackListRemark: '',
                 remark_bz: '',  //备注
-
+                Image:[],
+                isCheckBlack:'',   //客户资料中是否是黑名单
                 //--------------------------处理状态
                 proStatusSelectedName: "",//选中项中文名称
                 proStatusValue: "",//选中项value（即ID）
@@ -253,7 +317,7 @@
                         defaultIndex:""
                     }
                 ],
-
+                // disable:{disabled: true},
 
                 //--------------------------问题类型
                 quesTypeSelectedName: "",//选中项中文名称
@@ -268,7 +332,8 @@
                         defaultIndex:""
                     }
                 ],
-                onlyread: '',
+                tabActive: "audit_inspection",
+                haveQuestion:false,//无问题：显示 问题类型，详情，处理状态，处理意见
                 selected: 'audit_inspection',
                 family: '',
                 charge: 'charge',
@@ -277,10 +342,9 @@
 
                 //是否有问题的数组
                 slots: [{values: ['是', '否']}],
-
+                photoNum:0,
 
                 // action sheet 默认不显示，为false。操作sheetVisible可以控制显示与隐藏
-                quesType: false,
                 show: [],
                 scrollTop: "",
                 offsetTop: "",
@@ -288,12 +352,6 @@
                 address: "",
                 person: "",
                 startTime: "",
-                finishText: "", //完成情况文字
-                isQualifiedText: "", //是否合格文字
-                specificText: "", //具体情况文字
-                FinishValue: "", //记录完成情况节点信息
-                FinishDetailValue: "", //记录具体情况节点信息
-                disposeText: "",
                 pickerValue: false,
                 tempTimeList: true,
                 addRoomPopup: false,
@@ -305,187 +363,150 @@
                 checklist: false,
                 checkRoomList: [],
                 tempIntroduction: "",
-
-                note: "",
-                bedRoomNum: 2,
-                livingRoomNum: 1,
-                toiletNum: 0,
-                kitchenNum: 0,
-                replyFinishItems: [
-                    //完成情况
-                    {
-                        flex: 1,
-                        values: [],
-                        className: "slot1",
-                        textAlign: "center"
-                    }
-                ],
-                isQualifiedItems: [
-                    //完成情况
-                    {
-                        flex: 1,
-                        values: ["是", "否"],
-                        className: "slot1",
-                        textAlign: "center"
-                    }
-                ],
-                replySpecificList: false,
-                allReplySpecificItems: [], //全部具体情况
-                replySpecificItems: [
-                    //具体情况
-                    {
-                        flex: 1,
-                        values: [],
-                        className: "slot1",
-                        textAlign: "center"
-                    }
-                ],
-                selectPhoto: [
-                    {
-                        name: "拍照",
-                        method: this.getImage // 调用methods中的函数
-                    },
-                    {
-                        name: "从相册中选择",
-                        method: this.galleryImg // 调用methods中的函数
-                    }
-                ],
-                // action sheet 默认不显示，为false。操作sheetVisible可以控制显示与隐藏
-                sheetVisible: false,
-                replyResultDefault: true, //处理结果无值时，默认显示“点击输入内容”
-                replyResultValue: false, //处理结果有值时，显示值
-                wordOrderReplyResult: "" //处理结果
-            }
-        },
-        //保存数据，store渲染页面数据
-        activated() {
-            zm = 0;
-            img_index = 0;
-            this.workBillParams = this.$route.params;
-            this.WorkBillID = this.$route.params.WorkBillID;
-
-            if (pageSource !== "workOrderReplyResult") {
-                this.imgs = [];
-                index = 1;
-                files = [];
-                w = null;
-                procinstid = 0;
-                lfs = null;
-                zm = 0;
-                img_index = 0;
             }
         },
 
+        watch:{
+            quesTypeSelectedName(val,oldval){
+                console.log(val + ' ' +'val')
+                console.log(oldval)
+            },
+            proStatusSelectedName(val,oldval){
+                console.log(val + ' ' +'val')
+                console.log(oldval)
+            },
+        },
         mounted() {
             // 初始化页面赋值
-            var _this=this
-            this.houseList = this.$store.state.houseList;        //上页获取的信息
-            this.IsProblem = this.houseList.IsProblem;   //是否有问题 无1  有2
-            // this.quesTypeValue = '';     // 问题类型 id
-            // this.details = '';   //详情（表单textarea）
-            // this.advance = "";  // 处理意见
-            // this.blackcheck = "";  //黑名单 加入移除 传值  0 移除  1 加入
-            // this.proStatusValue =this.ProStatus;     //处理状态
-            // this.blacker = "";     //黑名单性质
-            this.blackRemark = this.houseList.BlackRemark;  //黑名单备注
-            // this.check(this.IsProblem)
-            // this.check(2) //是否有问题   初始选择1  无问题
-            this.ContactPhone = this.$store.state.houseList.Mobile   // 手机号
-            this.CusList()         //客户资料接口
-            this.AuditHistory()   //稽查历史
-            //---------------------------------------------------------------初始化数据
-            this.$http
-                .get(this.$myConfig.host + '/Api/InspectionOpera/SearchInspectionRec', {
-                    params: {
-                        IsSearch: 0,
-                        SendJobID: this.$store.state.houseList.SendJobID,
-                    }
-                })
-                .then(res => {
-                    var resInfo = res.body.Data
-                    if (resInfo) {
-                        console.log(resInfo)
-                        // this.check(resInfo.IsProblem); //是否有问题
-                        _this.quesTypeSelectedName=resInfo.Problem//问题类型
-                        _this.proStatusItems[0].defaultIndex=resInfo.ProStatus//处理状态
-                        // _this.quesTypeItems[0].defaultIndex=resInfo.Problem//问题类型
-                        _this.details = resInfo.ProblemDes  //详情
-                        _this.advance = resInfo.SuggestDes  //处理意见
-                        _this.imgs = resInfo.ImgList  //处理意见
-                        console.log(_this.imgs)
 
-                        console.log(_this.details)
-                        // _this.BlackListItems[0].defaultIndex=resInfo.BlackListValue//黑名单性质
-                        // console.log(_this.proStatusItems[0].defaultIndex)
-                        // console.log(_this.BlackListItems[0].defaultIndex)
-                        // console.log(_this.quesTypeItems[0].defaultIndex)
-                    }
-                })
+            var total = document.documentElement.clientHeight-27;
+            document.getElementById("inspec").style.height=total+"px";
+            this.houseList = this.$store.state.houseList;        //上页获取的信息
+            this.IsProblem = this.houseList.IsProblem;
+            this.isQuestion(0);      //是否有问题 无1  有2
+            this.blackRemark = this.houseList.BlackRemark;  //黑名单备注    //是否有问题   初始选择1  无问题
+            this.ContactPhone = this.$store.state.houseList.Mobile   // 手机号
+            this.HeatStatus = this.houseList.HeatStatus
+            this.HeatStatusMeaning = this.houseList.HeatStatusMeaning
+            this.IsArrears = this.houseList.IsArrears
+            this.IsCheckBlack = this.houseList.IsCheckBlack
+            this.IsCheckBlackMeaning = this.houseList.IsCheckBlackMeaning
+            //---------------------------------------------------------------初始化数据
+
+            // // this.loadingData()
+            // this.$http
+            //     .get(this.$myConfig.host + "/Api/DropdownList/GetProblemDropDown")
+            //     .then(
+            //         function (res) {
+            //             var resInfo = res.body.Data
+            //             if (resInfo) {
+            //                 this.quesTypeItems[0].values = res.body.Data;
+            //                 this.quesTypeItems[0].values.unshift({TypeName: '请选择 *', ID: ''})
+            //                 // for(var i = 0; i<this.quesTypeItems.length;i++){
+            //                 //     if(this.quesTypeSelectedName==this.quesTypeItems.values[i].TypeName){
+            //                 //         this.quesTypeItems.defaultIndex = i
+            //                 //         this.quesTypeValue = this.quesTypeItems[i].ID
+            //                 //     }
+            //                 //     console.log(this.quesTypeItems.values)
+            //                 // }
+            //             }
+            //         })
+            // //---------------------------------------------------------------处理状态
+            // // this.loadingStatus()
+            // this.$http
+            //     .get(this.$myConfig.host + "/Api/DropdownList/GetProStatusDropDown")
+            //     .then(
+            //         function (res) {
+            //             var resInfo = res.body.Data
+            //             if (resInfo) {
+            //                 this.proStatusItems[0].values = res.body.Data;
+            //                 this.proStatusItems[0].values.unshift({Name:'请选择 *', ID:''})
+            //                 // console.log(this.proStatusItems)
+            //                 // console.log(resInfo)
+            //             }
+            //         });
+            //
+            //
+            // //---------------------------------------------------------------黑名单性质
+            // // this.loadingBlack()
+            // this.$http
+            //     .get(this.$myConfig.host + "/Api/DropdownList/GetBlackListDropDown")
+            //     .then(
+            //         function (res) {
+            //             var resInfo = res.body.Data
+            //             if (resInfo) {
+            //                 this.BlackListItems[0].values = res.body.Data;
+            //                 this.BlackListItems[0].values.unshift({TypeName:'请选择 *', ID:''})
+            //             }
+            //         });
+
+
+            Promise.all([this.loadingQuestion(), this.loadingStatus(), this.loadingBlack()],this.loadingData()).then(function() {
+
+            });
+
+            // this.$http
+            //     .get(this.$myConfig.host + '/Api/InspectionOpera/SearchInspectionRec', {
+            //         params: {
+            //             IsSearch: 0,
+            //             SendJobID: this.$store.state.houseList.SendJobID,
+            //         }
+            //     })
+            //     .then(res => {
+            //         var resInfo = res.body.Data
+            //         if (resInfo) {
+            //             console.log(resInfo)
+            //             this.quesTypeSelectedName=resInfo.Problem//问题类型
+            //             this.quesTypeValue=resInfo.ProblemID//问题类型
+            //             this.proStatusItems[0].defaultIndex=resInfo.ProStatus//处理状态
+            //             this.proStatusSelectedName=resInfo.ProStatusMeaning//处理状态
+            //             this.BlackListValue=resInfo.BlackListTypeID//处理状态
+            //             this.BlackListSelectedName=resInfo.BlackListType//处理状态
+            //             this.blackRemark=resInfo.BlackListRemark//处理状态
+            //             this.details = resInfo.ProblemDes  //详情
+            //             this.advance = resInfo.SuggestDes  //处理意见
+            //             this.Image = resInfo.ImgList  //图片
+            //             if(this.blackRemark == 'null'){
+            //                 this.blackRemark = ''
+            //             }
+            //             console.log(this.quesTypeValue)
+            //             // console.log(this.proStatusItems[0].defaultIndex)
+            //
+            //         }
+            //     })
+
 
             //----------------------------------------------------------------黑名单显示  加入 / 移除
             if (this.houseList.IsCheckBlack == 0) {
                 this.radiolist = ["加入"]
 
             } else if (this.houseList.IsCheckBlack == 1) {
-                this.radiolist = ["移除"]
+                this.radiolist = ["移出"]
             }
 
+            if (this.houseList.IsCheckBlackMeaning == '黑'){
+                this.isCheckBlack = '是'
+            }else{
+                this.isCheckBlack = '否'
+            }
             //---------------------------------------------------------------问题类型
-            this.$http
-                .get(this.$myConfig.host + "/Api/DropdownList/GetProblemDropDown")
-                .then(
-                    function (res) {
-                        var resInfo = res.body.Data
-                        if (resInfo) {
-                            this.quesTypeItems[0].values = res.body.Data;
-                            this.quesTypeItems[0].values.unshift({TypeName: '请选择 *', ID: ''})
-                            for(var i = 0; i<this.quesTypeItems.length;i++){
-                                if(_this.quesTypeSelectedName==_this.quesTypeItems[i].TypeName){
-                                    this.quesTypeItems[0].defaultIndex = i
-                                }
-                            }
+            if(this.blackRemark == 'null'){
+                this.blackRemark = ''
+            }
+            if(this.radiolist[0] == "移出"){
+                this.blackShow = false
+                this.read=true
+                console.log(this.blackShow)
 
-                        }
-
-                    })
-
-
-
-            //---------------------------------------------------------------处理状态
-            this.$http
-                .get(this.$myConfig.host + "/Api/DropdownList/GetProStatusDropDown")
-                .then(
-                    function (res) {
-                        var resInfo = res.body.Data
-                        if (resInfo) {
-                            this.proStatusItems[0].values = res.body.Data;
-                            this.proStatusItems[0].values.unshift({Name:'请选择 *', ID:''})
-                            // console.log(this.proStatusItems)
-                            // console.log(resInfo)
-                        }
-                    });
-
-
-            //---------------------------------------------------------------黑名单性质
-            this.$http
-                .get(this.$myConfig.host + "/Api/DropdownList/GetBlackListDropDown")
-                .then(
-                    function (res) {
-                        var resInfo = res.body.Data
-                        if (resInfo) {
-                            this.BlackListItems[0].values = res.body.Data;
-                            this.BlackListItems[0].values.unshift({TypeName:'请选择 *', ID:''})
-                            // console.log(this.BlackListItems)
-                        }
-                    });
-
-
-
-
+            }
+           // this.loadingQuestion()
+            this.CusList()         //客户资料接口
+            this.AuditHistory()   //稽查历史
         },
 
+
         methods: {
-            check(index) {
+            isQuestion(index) {
                 // 先取消所有选中项
                 this.radios.filter((item) => {
                     item.isChecked = false;
@@ -498,9 +519,99 @@
                 // console.log(this.IsProblem);
                 // console.log(this.question)
                 // console.log(this.radios[index].isChecked);
-
+                // if(this.IsProblem == 2){
+                //     $('#quesTypeID').show()
+                //     $('#detailID').show()
+                //     $('#statuID').show()
+                //     $('#advanceID').show()
+                // }else if(this.IsProblem == 1){
+                //     $('#quesTypeID').hide()
+                //     $('#detailID').hide()
+                //     $('#statuID').hide()
+                //     $('#advanceID').hide()
+                // }
+                if(this.IsProblem == 2){//无问题
+                    this.haveQuestion=false
+                }else if(this.IsProblem == 1){//有问题
+                    this.haveQuestion=true
+                }
             },
-            //选择问题类型
+            loadingData(){
+                this.$http
+                    .get(this.$myConfig.host + '/Api/InspectionOpera/SearchInspectionRec', {
+                        params: {
+                            IsSearch: 0,
+                            SendJobID: this.$store.state.houseList.SendJobID,
+                        }
+                    })
+                    .then(res => {
+                        var resInfo = res.body.Data
+                        if (resInfo) {
+                            console.log(resInfo)
+                            this.quesTypeSelectedName=resInfo.Problem//问题类型
+                            this.quesTypeValue=resInfo.ProblemID//问题类型
+                            this.proStatusItems[0].defaultIndex=resInfo.ProStatus//处理状态
+                            this.proStatusSelectedName=resInfo.ProStatusMeaning//处理状态
+                            this.BlackListValue=resInfo.BlackListTypeID//处理状态
+                            this.BlackListSelectedName=resInfo.BlackListType//处理状态
+                            this.blackRemark=resInfo.BlackListRemark//处理状态
+                            this.details = resInfo.ProblemDes  //详情
+                            this.advance = resInfo.SuggestDes  //处理意见
+                            this.Image = resInfo.ImgList  //图片
+                            if(this.blackRemark == 'null'){
+                                this.blackRemark = ''
+                            }
+                            console.log(this.quesTypeValue)
+                            // console.log(this.proStatusItems[0].defaultIndex)
+
+                        }
+                    })
+            },
+            loadingQuestion(){
+                this.$http
+                    .get(this.$myConfig.host + "/Api/DropdownList/GetProblemDropDown")
+                    .then(
+                        function (res) {
+                            var resInfo = res.body.Data
+                            if (resInfo) {
+                                this.quesTypeItems[0].values = res.body.Data;
+                                this.quesTypeItems[0].values.unshift({TypeName: '请选择 *', ID: ''})
+                                for(var i = 0; i<this.quesTypeItems.length;i++){
+                                    if(this.quesTypeSelectedName==this.quesTypeItems[i].TypeName){
+                                        this.quesTypeItems.defaultIndex = i
+                                        this.quesTypeValue = this.quesTypeItems.values[i].ID
+                                    }
+                                }
+                            }
+                        })
+            },
+            loadingStatus(){
+                this.$http
+                    .get(this.$myConfig.host + "/Api/DropdownList/GetProStatusDropDown")
+                    .then(
+                        function (res) {
+                            var resInfo = res.body.Data
+                            if (resInfo) {
+                                this.proStatusItems[0].values = res.body.Data;
+                                this.proStatusItems[0].values.unshift({Name:'请选择 *', ID:''})
+                                // console.log(this.proStatusItems)
+                                // console.log(resInfo)
+                            }
+                        });
+            },
+            loadingBlack(){
+                this.$http
+                    .get(this.$myConfig.host + "/Api/DropdownList/GetBlackListDropDown")
+                    .then(
+                        function (res) {
+                            var resInfo = res.body.Data
+                            if (resInfo) {
+                                this.BlackListItems[0].values = res.body.Data;
+                                this.BlackListItems[0].values.unshift({TypeName:'请选择 *', ID:''})
+                            }
+                        });
+            },
+            // 选择问题类型
             choosequesType() {
                 this.quesType = !this.quesType;
             },
@@ -510,42 +621,30 @@
                     this.quesTypeSelectedName = values[0].TypeName;
                     this.quesTypeValue = values[0].ID;
                     this.details = values[0].Remark;
-                    // console.log(this.details)
                     console.log(this.quesTypeValue)
                 }
             },
 
             blackChange() {     //t添加移除 黑名单
                 if (this.radiolist[0] == "加入") {
-                    //加入
-                    // Toast('18888888')
-
-
-                    if (this.blackCheckbox == 1) {
-                        this.blackCheckbox = 0;
-                        // Toast('1111111')
-                        this.blackcheck = "1"
-                    } else if (this.blackCheckbox == 0) {
-                        Toast('000000')
+                    if (this.blackCheckbox == 0) {
                         this.blackCheckbox = 1;
+                        this.blackcheck = "1"
+                    } else if (this.blackCheckbox == 1) {
+                        this.blackCheckbox = 0;
+                        this.blackcheck = ''
+                    }
+                }else if(this.radiolist[0] == "移出"){
+                    if (this.blackCheckbox == 0) {
+                        this.blackCheckbox = 1;
+                        this.blackcheck = "0"
+                    } else if (this.blackCheckbox == 1) {
+                        this.blackCheckbox = 0;
                         this.blackcheck = ''
                     }
                 }
-                // else {
-                //     var y = 0;
-                //     $(".checkblack").click(function () {
-                //         if (y == 0) {
-                //             y = 1;
-                //             this.blackcheck = "1" + ""
-                //         } else if (y == 1) {
-                //             y = 0;
-                //             this.blackcheck = 0 + ""
-                //         }
-                //     })
-                // }
+
             },
-
-
             //--------------------------------------------------处理状态
             //选择处理状态
             chooseProStatus() {
@@ -556,7 +655,6 @@
                 if (values[0]) {
                     this.proStatusSelectedName = values[0].Name;
                     this.proStatusValue = values[0].ID;
-                    console.log(this.proStatusValue)
                 }
             },
             //--------------------------------------------------黑名单性质
@@ -569,43 +667,16 @@
                 if (values[0]) {
                     this.BlackListSelectedName = values[0].TypeName;
                     this.BlackListValue = values[0].ID;
-                    // console.log(this.BlackListValue)
                 }
             },
-
             back() {
                 this.$router.go(-1);
             },
-            finishStatus() {
-                this.questionState = !this.questionState;
-            },
-            btnStateClick() {
-                this.changeDealState = !this.changeDealState
-            },
-            blackClick() {
-                this.blackState = !this.blackState
-            },
-            onValuesChange(picker, values) {
-                this.questionType = values[0];
-                console.log(this.questionType)
-                // console.log(this.finishText);
-            },
-            blackList(picker, values) {
-                this.blacker = values[0];
-            },
-
-            getValues(picker, value) {
-
-                value = this.slotsDeal
-                this.btnState = value[0];//打开蒙版   赋值为选择的选项
-                //this.slotsDeal = res.data.Data     //连接口  接收处理状态
-
-            },
-
 
             //调用原生选项
             showActionSheet(conf) {
-                if (zm >= 5) {
+                // zm = zm+hdzm
+                if (this.imgs.length + this.Image.length >= 5) {
                     MessageBox("提示", "只能上传五张图片");
                 } else {
                     var _this = this;
@@ -634,21 +705,52 @@
                     imgkey: imgkey,
                     id: id,
                     src: src,
-                    img_index: img_index,
+                    img_index: this.imgs.length,
                     w: 400,
                     h: 550
                 });
-                Toast(this.imgs.src)
+
             },
-            //删除图片
-            delImg(imgId, imgkey, id, img_index) {
+            //删除后端照片 /Api/InspectionApp/DeleteFile
+
+            delImage(index){
                 var _this = this;
-                var bts = ["是", "否"];
+                var bts = ["否","是"];
                 plus.nativeUI.confirm(
                     "是否删除图片？",
                     function (e) {
                         var i = e.index;
-                        if (i == 0) {
+                        if (i == 1) {
+                            _this.$http
+                                .get(_this.$myConfig.host + '/Api/InspectionApp/DeleteFile', {
+                                    params: {
+                                        fileName: _this.Image[index].split('/')[_this.Image[index].split('/').length - 1],
+                                        cusID: _this.houseList.CusID,
+                                        cusName: _this.houseList.CusName
+                                    },
+                                })
+                                .then(res => {
+                                    hdzm--
+                                    if (res.body.IsSuccess) {
+                                        _this.Image.splice(index, 1)
+                                    }
+
+                                })
+                        }
+                    },
+                    "提示",
+                    bts
+                )
+            },
+            //删除图片
+            delImg(imgId, imgkey, id, img_index) {
+                var _this = this;
+                var bts = ["否","是"];
+                plus.nativeUI.confirm(
+                    "是否删除图片？",
+                    function (e) {
+                        var i = e.index;
+                        if (i == 1) {
                             var itemname = id + "img-" + imgkey; //429img-F_ZDDZZ
                             var itemvalue = plus.storage.getItem(itemname);
                             //{IMG_20160704_112614,_doc/upload/F_ZDDZZ-IMG_20160704_112614.jpg,file:///storage/emulated/0/Android/data/io.dcloud...../doc/upload/F_ZDDZZ-1467602809090.jpg}
@@ -660,7 +762,7 @@
                                 index,
                                 img_index
                             );
-                            zm--
+                            // zm--
                         }
                     },
                     "提示",
@@ -674,19 +776,19 @@
                 for (var r = 0; r < this.imgs.length; r++) {
                     this.imgs[r].img_index = r + 1;
                 }
-                zm -= 1;
+                // zm -= 1;
                 img_index -= 1;
                 //校正
                 if (this.imgs.length == 0) {
-                    zm = 0;
-                    img_index = 0;
+                    // zm = 0;
+                    // img_index = 0;
                 }
                 wa.close();
             },
             //选取相册图片
             galleryImg(divid) {
                 var _this = this;
-                var n = 5 - zm;
+                this.photoNum = 5 - this.imgs.length - this.Image.length;
                 var id = document.getElementById("ckjl.id").value;
 
                 plus.gallery.pick(
@@ -694,7 +796,7 @@
                         for (var i in e.files) {
                             var name = e.files[i].substring(0, e.files[i].indexOf("."));
                             _this.showImgDetail(name, divid, id, e.files[i]);
-                            zm += 1;
+                            // zm += 1;
                         }
                         lfs = e.files;
                     },
@@ -705,7 +807,7 @@
                         filename: "_doc/camera/",
                         filter: "image",
                         multiple: true,
-                        maximum: n, // 最多选择5张图片
+                        maximum: this.photoNum, // 最多选择5张图片
                         selected: _this.lfs,
                         system: false,
                         onmaxed: function () {
@@ -734,7 +836,7 @@
                                     }
                                 );
                                 _this.showImgDetail(entry.name, divid, id, entry.toLocalURL());
-                                zm += 1;
+                                // zm += 1;
                             },
                             function (e) {
                                 Toast("读取拍照文件错误：" + e.message);
@@ -752,138 +854,67 @@
             //点击保存按钮上传图片
 
             savaData() {
-                Toast('aaaa')
                 let _this = this;
-                console.log(this.$store.token + '')
-                console.log(this.houseList.SendJobID)
-                console.log(this.houseList.CusID)
-                // console.log(_this.houseList.CusID)
-                console.log(this.houseList.CusName)
-                console.log(this.quesTypeValue)   //问题类型ID
-                console.log(this.IsProblem)
-                console.log(this.details)
-                console.log(this.advance)
-                console.log(this.blackcheck+'')
-                console.log(this.proStatusValue + '')
-                console.log(this.BlackListValue +'')
-                console.log(this.blackRemark)
 
-
-                //plus.storage.clear();
-                let wa = plus.nativeUI.showWaiting();
-                let task = plus.uploader.createUpload(
-                    _this.$myConfig.host + "/Api/InspectionApp/AddInspectionRec",
-                    {
-                        method: "POST"
-                    },
-                    function (t, status) {
-                        if (status == 200) {
-                            try {
-                                let info = $.parseJSON(t.responseText);
-                                console.log(info);
-                                //改变全局参数
-                                // _this.$store.operateType = true;
-                                _this.$router.go(-1);
-                                // _this.$store.wordOrderReplyResult = ""; //清空处理结果
-                                Toast(info.Message);
-                            } catch (e) {
-                                // Toast("文件上传失败");
-                            }
-                            wa.close();
-                        } else {
-                            wa.close();
-                            Toast("上传失败:" + info.Message);
-                        }
-                    }
-                );
-                // task.setRequestHeader('auth',_this.$store.token);
-                // task.setRequestHeader('Content-Type','multipart/form-data');
-                // task.addData("SendJobID","1");//_this.workBillParams.WorkBillID);
-                // task.addData("CusID","1");//_this.workBillParams.WorkBillID);
-                // task.addData("CusName", "1");//_this.workBillParams.WorkBillID);
-                // task.addData("ProblemID","1");//_this.workBillParams.WorkBillID);
-                // task.addData("IsProblem","1");// _this.workBillParams.latestVersion);
-                // task.addData("ProblemDes","1")// _this.workBillParams.FlowInstantID);
-                // task.addData("SuggestDes","1")//_this.workBillParams.FlowToDoTS);
-                // task.addData("IsBlack","1")//_this.$store.UserInfo.UserID + "");
-                // task.addData("ProStatus","1")// _this.$store.UserInfo.OrgID);
-                // task.addData("BlackListType","1")// _this.FinishValue);
-                // task.addData("BlackListRemark","1")
-                // task.start();
-                task.setRequestHeader('auth', _this.$store.token);
-                task.setRequestHeader('Content-Type', 'multipart/form-data');
-                task.addData("SendJobID", _this.houseList.SendJobID + '');//_this.workBillParams.WorkBillID);
-                task.addData("CusID", _this.houseList.CusID + '');//_this.workBillParams.WorkBillID);
-                task.addData("CusName", _this.houseList.CusName + '');//_this.workBillParams.WorkBillID);
-                task.addData("ProblemID", _this.quesTypeValue + '');// 问题类型ID
-                task.addData("IsProblem", _this.IsProblem + '');  // 是否有问题 1 无  2 有
-                task.addData("ProblemDes", _this.details + '');  // 详情
-                task.addData("SuggestDes", _this.advance + '');  //处理意见
-                task.addData("IsBlack", _this.blackcheck + '');  //黑名单  0 移除 1 加入
-                task.addData("ProStatus", _this.proStatusValue + ''); //处理状态ID 123
-                task.addData("BlackListType", _this.BlackListValue + '')// 黑名单性质
-                task.addData("BlackListRemark", _this.blackRemark + '')   //黑名单备注
-                task.start();
-                for (let i = 0; i < _this.imgs.length; i++) {
-                    //key需要字符串类型
-                    task.addFile(_this.imgs[i].src, {
-                        key: Math.floor(Math.random() * 1000 + 1000).toString()
-                    });
+                if(this.blackCheckbox==1 && this.BlackListValue=='' && this.radiolist[0] == "加入"){
+                    Toast('请选择黑名单性质')
+                    return
                 }
-
+                else if(this.IsProblem == 2 && this.quesTypeValue == ''){
+                    Toast('请选择问题类型')
+                }else if(this.IsProblem == 2 && this.proStatusValue == ''){
+                    Toast('请选择处理状态')
+                    return
+                }
+                else {
+                    //plus.storage.clear();
+                    let wa = plus.nativeUI.showWaiting();
+                    let task = plus.uploader.createUpload(
+                        _this.$myConfig.host + "/Api/InspectionApp/AddInspectionRec",
+                        {
+                            method: "POST"
+                        },
+                        function (t, status) {
+                            // Toast(status)
+                            if (status == 200) {
+                                Toast('添加稽查记录成功');
+                                try {
+                                    let info = $.parseJSON(t.responseText);
+                                    // Toast('添加稽查记录成功');
+                                    _this.$router.go(-1);
+                                    n=0
+                                    Toast('添加稽查记录成功');
+                                } catch (e) {
+                                }
+                                wa.close();
+                            } else {
+                                wa.close();
+                                Toast("上传失败:" + info.Message);
+                            }
+                        }
+                    );
+                    task.setRequestHeader('auth', _this.$store.token);
+                    task.setRequestHeader('Content-Type', 'multipart/form-data');
+                    task.addData("SendJobID", _this.houseList.SendJobID + '');//_this.workBillParams.WorkBillID);
+                    task.addData("CusID", _this.houseList.CusID + '');//_this.workBillParams.WorkBillID);
+                    task.addData("CusName", _this.houseList.CusName + '');//_this.workBillParams.WorkBillID);
+                    task.addData("ProblemID", _this.quesTypeValue + '');// 问题类型ID
+                    task.addData("IsProblem", _this.IsProblem + '');  // 是否有问题 1 无  2 有
+                    task.addData("ProblemDes", _this.details + '');  // 详情
+                    task.addData("SuggestDes", _this.advance + '');  //处理意见
+                    task.addData("IsBlack", _this.blackcheck + '');  //黑名单  0 移除 1 加入
+                    task.addData("ProStatus", _this.proStatusValue + ''); //处理状态ID 123
+                    task.addData("BlackListType", _this.BlackListValue + '')// 黑名单性质
+                    task.addData("BlackListRemark", _this.blackRemark + '')   //黑名单备注
+                    task.start();
+                    for (let i = 0; i < _this.imgs.length; i++) {
+                        //key需要字符串类型
+                        task.addFile(_this.imgs[i].src, {
+                            key: Math.floor(Math.random() * 1000 + 1000).toString()
+                        });
+                    }
+                }
             },
-
-            // savaData(){
-            //     var _this = this
-            //     console.log(_this.houseList.SendJobID)
-            //         console.log(_this.houseList.CusID)
-            //
-            //         console.log(_this.houseList.CusName)
-            //         console.log(_this.quesTypeValue)
-            //         console.log( _this.IsProblem)
-            //         console.log(_this.details)
-            //         console.log(_this.advance)
-            //         console.log(_this.blackcheck)
-            //         console.log(_this.btnState )
-            //         console.log(_this.blacker )
-            //         console.log(_this.blackRemark )
-            //     var formData = new FormData();
-            //     formData.append('SendJobID', this.houseList.SendJobID);
-            //     formData.append('UserID', '');
-            //     formData.append('CusID', this.houseList.CusID);
-            //     formData.append('CusName', this.houseList.CusName);
-            //     formData.append('ProblemID', this.quesTypeValue);
-            //     formData.append('IsProblem', this.IsProblem);
-            //     // formData.append('IsProblemMeaning',  );
-            //     formData.append('ProblemDes',0);
-            //     formData.append('SuggestDes', this.advance);
-            //     formData.append('IsBlack', this.blackcheck);
-            //     formData.append('ProStatus', this.btnState);
-            //     // formData.append('ProStatusMeaning', this.ProStatusMeaning);
-            //     formData.append('BlackListType', this.blacker);  //黑名单类型
-            //     formData.append('BlackListRemark', this.blackRemark);
-            //
-            //     this.imgs.filter(item=>typeof item != 'string').forEach(item =>{
-            //         formData.append('file', item)
-            //     })
-            //     this.$http.post(_this.$myConfig.host + "/Api/InspectionApp/AddInspectionRec", formData, {
-            //         headers: {
-            //             'auth': _this.$store.token,
-            //             "Content-Type": "multipart/form-data"
-            //         },
-            //     },{emulateJSON: true})
-            //         .then(
-            //         function (res) {
-            //             Toast(res.bodyText);
-            //             // Toast(res);
-            //             // this.msg = res.bodyText;
-            //         },
-            //         function (res) {
-            //             Toast(res.status);
-            //         }
-            //     );
-            // },
-
             // 图片压缩
 
             compress(img) {
@@ -913,23 +944,6 @@
                 ctx.fillRect(0, 0, canvas.width, canvas.height);
                 //如果图片像素大于100万则使用瓦片绘制
                 let count;
-                // if ((count = width * height / 1000000) > 1) {
-                //     console.log("超过100W像素");
-                //     count = ~~(Math.sqrt(count) + 1); //计算要分成多少块瓦片
-                //     //            计算每块瓦片的宽和高
-                //     let nw = ~~(width / count);
-                //     let nh = ~~(height / count);
-                //     tCanvas.width = nw;
-                //     tCanvas.height = nh;
-                //     for (let i = 0; i < count; i++) {
-                //         for (let j = 0; j < count; j++) {
-                //             tctx.drawImage(imgs, i * nw * ratio, j * nh * ratio, nw * ratio, nh * ratio, 0, 0, nw, nh);
-                //             ctx.drawImage(tCanvas, i * nw, j * nh, nw, nh);
-                //         }
-                //     }
-                // } else {
-                //     ctx.drawImage(imgs, 0, 0, width, height);
-                // }
                 //进行最小压缩
                 let ndata = canvas.toDataURL('image/jpeg', 0.1);
                 console.log('压缩前：' + initSize);
@@ -973,9 +987,18 @@
                         {
                             "CusID": this.$store.state.houseList.CusID,
                         }).then(res => {
-                    this.cusInform = res.body.Data
+                    if(res.body.IsSuccess){
+                        let resInfo = res.body.Data
+                        if(resInfo != ''){
+                            this.cusInform=resInfo
+                        }
+                    }else{
+
+                    }
+
                 })
             },
+
 
             //=======================稽查记录接口
             AuditHistory() {
@@ -986,47 +1009,67 @@
                             CurrentYear: this.$store.CurrentYear,
                             CusID: this.$store.state.houseList.CusID,
                             PlanName: '',
-                            CommunityName: '',
+                            Address: '',
                             IsProblem: '',
                         },
                     })
                     .then(res => {
                         // console.log(this.$store.state.houseList.CusID)
                         res.body.Data.forEach(function (item) {
-                            item.InspectionTime = item.InspectionTime.substr(0, 10)
+                            item.InspectionTime = item.InspectionTime.substr(0, 10) +' '+ item.InspectionTime.substr(11,8)
                         })
                         this.auditHistory = res.body.Data
-                        console.log(this.auditHistory)
+                        // console.log('this.auditHistory')
+                        // console.log(this.auditHistory)
                     })
+            },
+            recordDetail(index){
+                this.$store.state.reLiDetail = this.auditHistory[index]
+                // console.log(this.$store.state.reLiDetail)
             },
             //拨打电话
             tel() {
                 plus.device.dial(this.ContactPhone, true);
             },
-
-
-
         },
-        // watch: {
-        //     selected(val) {
-        //         if (this.selected == "audit_inspection" || this.selected == "audit_user") {
-        //             this.audittitle = "稽查—住户详情"
-        //         } else if (this.historyContent == true) {
-        //             //在监听之后才能改变
-        //             // this.audittitle = "稽查—历史详情"
-        //             // console.log(1111)
-        //         } else {
-        //             // this.audittitle = "稽查—住户详情"
-        //         }
-        //     },
-        // }
     }
 </script>
 <style scoped>
+    .cusNews{
+        padding-bottom:0.1rem
+    }
+    .content_list{
+        border-bottom: 1px solid #E0E0E0;
+        background: #fff
+    }
+    .people_name {
+        margin: 0;
+    }
+    .people_remark{
+        margin: 0;
+        padding:10px 0;
+    }
+    .people_name > div {
+        text-align: left;
+        width: 15%;
+        display: inline-block;
+        font-size: 0.14rem;
+        color: #232323;
+        vertical-align: top;
+    }
+
+    .people_name > span {
+        max-width: 80%;
+        display: inline-block;
+        font-size: 0.14rem;
+        color: #595959;
+    }
+
+
     .audit_family_information {
         background-color: #F9F9F9;
         height: 100%;
-        font-size: 13px;
+        font-size: 0.14rem;
         /*padding-right: 30px;*/
     }
 
@@ -1051,61 +1094,62 @@
         margin: 0 auto;
         margin-top: 44px;
     }
+    .item {
+        display: inline-block;
+    }
+    .mint-tab-container {
+        height: 100%;
+        overflow: visible;
+    }
+    .nav {
+        background-color: #efeff4;
+        padding: 0;
+        text-align: center;
+        position: fixed;
+        top: 0.38rem;
+        width: 100%;
+        z-index: 9;
+    }
+    .nav .tab_btn {
+        width: 100%;
+        background: #fff;
+    }
+    .nav .tab_btn > div {
+        width: 33.333%;
+        text-align: center;
+        /* padding:0 0.08rem;
+        margin:0 0.1rem; */
+        height: 0.44rem;
+        line-height: 0.44rem;
+        float: left;
+        font-size: 0.14rem;
+        color: #666;
+        background-color: #fff;
+    }
+    .checked {
+        color: #49a9ea !important;
+        border-bottom: 0.02rem solid #49a9ea;
+        box-sizing: border-box;
+    }
+
+    .tab_btn {
+        margin: 0 auto;
+        display: inline-block;
+    }
 
     .mint-tab-container {
-        margin-top: 10px;
-        color:#232323;
+        height: 100%;
+        overflow: visible;
     }
 
     .radio-box {
         margin-right: 15px;
-    }
-
-    /*.mint-popup {*/
-    /*    text-align: center;*/
-    /*    background-color: #fff;*/
-    /*    color: #000;*/
-    /*    border-radius: 8px;*/
-    /*    !**!*/
-    /*}*/
-
-    /*!*弹框标题样式*!*/
-    /*.pickerTitle {*/
-    /*    width: 200px;*/
-    /*    color: #fff;*/
-    /*    background-color: #49A9EA;*/
-    /*    height: 50px;*/
-    /*    line-height: 35px;*/
-    /*    font-size: 17px;*/
-    /*    padding: 10px;*/
-    /*    border-top-left-radius: 8px;*/
-    /*    border-top-right-radius: 8px;*/
-
-    /*}*/
-
-    /*.picker-slot {*/
-    /*    font-size: 14px;*/
-    /*    margin: 10px;*/
-    /*    overflow: hidden;*/
-    /*    position: relative;*/
-    /*    max-height: 100%;*/
-    /*}*/
-
-    .sendimg {
-        width: 50px;
-        height: 50px;
+        display: inline-block;
     }
 
     .mint-field.is-textarea .mint-cell-value {
         padding: 5px 10px;
     }
-
-    .reply_content {
-        margin-top: 0.15rem;
-        height: 86%;
-        overflow: scroll;
-    }
-
     .mui-table-view-cell > .step_title {
         background-color: #49a9ea;
         color: #fff;
@@ -1118,8 +1162,8 @@
     }
 
     .mui-table-view-cell {
-        padding: 10px 15px;
-        line-height:24px;
+        padding: 7px 15px;
+        line-height:34px;
         background-color: #fff;
     }
 
@@ -1133,7 +1177,7 @@
     }
     .mui-table-view-cell > span {
         float: right;
-        margin-top: -6px;
+
         max-width: 75%;
         color: #595959;
     }
@@ -1183,11 +1227,11 @@
 
     .mui-table-view-cell > div.content {
         width: 75%;
-        font-size: 13px;
+        font-size:0.14rem;
     }
 
     .mui-table-view-cell > div.content #Image {
-        float: right;
+        float: left;
     }
 
     /*.photoShow.mint-popup {*/
@@ -1198,7 +1242,7 @@
     /*    width: 100%;*/
     /*}*/
     .eachplan_content{
-        font-size: 13px !important;
+        font-size:0.14rem !important;
     }
     .tempBtn {
         margin-top: 10px;
@@ -1257,7 +1301,7 @@
     }
 
     .submit_btn {
-        position: fixed;
+        position: absolute;
         bottom: 0;
     }
 
@@ -1279,13 +1323,95 @@
 
     .mint-cell-wrapper {
         padding: 0;
+        background-image: none !important
     }
     .isQues{
         width:40%;
         display: inline-block;
     }
     .status_deal{
-        width: 60%;
+        width: 58%;
         display: inline-block;
     }
+    .address{
+        padding-top: 5px;
+    }
+    .pending_auditnews{
+        margin-bottom:51px;
+    }
+    #inspec{
+        overflow: scroll;
+    }
+
+    /*标签*/
+    .status_icon {
+        height: 0.25rem;
+        line-height: 0.25rem;
+        text-align: center;
+        border-radius: 0.04rem;
+        color: #fff;
+        display: inline-block
+    }
+
+    .status_qt {
+        width: 0.4rem;
+        background: #FF6060;
+        margin-right: 0.05rem;
+    }
+
+    .status_bt {
+        width: 0.4rem;
+        background: #FFCC01;
+        margin-right: 0.05rem;
+    }
+
+    .status_h {
+        width: 0.25rem;
+        background: #676767;
+        margin-right: 0.05rem;
+    }
+
+    .status_q1 {
+        width: 0.25rem;
+        background: #ccc;
+        margin-right: 0.05rem;
+    }
+
+    .status_q2 {
+        width: 0.25rem;
+        background: #FA6400;
+        margin-right: 0.05rem;
+    }
+
+    .status_wg {
+        width: 0.4rem;
+        background: #ccc;
+        margin-right: 0.05rem;
+    }
+
+    .status_zc {
+        width: 0.4rem;
+        background: #2FB91E;
+        margin-right: 0.05rem;
+    }
+
+    .name_icon {
+        display: flex;
+        /*font-size:12px ;*/
+        /*flex-wrap: wrap;*/
+        justify-content: space-between;
+        /*position: absolute;*/
+    }
+    .icon_status {
+        display: inline-block;
+        position: relative;
+        float: right;
+        margin-right: 10px;
+        width:33%;
+        font-size: 0.12rem;
+    }
+    .mint-tab-container-wrap{
+        background: #fff
+    }
+
 </style>
