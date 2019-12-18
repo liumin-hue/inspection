@@ -18,8 +18,8 @@
                                 当前共有稽查单 <span class="red">{{InspectionNum}}</span> 个　　当前已完成稽查单 <span class="green">{{InspectionCompleteNum}}</span> 个
                             </div>
                             
-                            <router-link to="/PendingAudit">
-                                <div class="home_btn home_btn_bg1">
+                            <router-link :to="{name:'PendingAudit',query:{id:'home'}}">
+                                <div class="home_btn home_btn_bg1" v-if="!$route.meta.keepAlive">
                                     <span class="home_btn_bg_text">待稽查</span>
                                     <span class="home_btn_bg_num">{{WaitInspectionNum}}</span>
                                     <span class="home_btn_bg_unit">户</span>
@@ -154,7 +154,7 @@
                 //workOrderPoolNew: 0,
                 isLoading: false,//载入动画
                 versions: false,//是否提示有新版本
-                oldVersions: "3.0.2"//旧版本号
+                oldVersions: "3.0.3"//旧版本号
             };
         },
         props: {},
@@ -179,6 +179,11 @@
             this.getHomeData();//获取首页数据统计
             this.comebefor()
         },
+        // beforeRouteLeave: (to, from, next) => {
+        //     // to.meta.keepAlive = false
+        //     to.meta.keepAlive = false;
+        //     next()
+        // },
         //判断跳转路径
         // beforeRouteEnter: (to, from, next) => {
         //     //获取当前页面

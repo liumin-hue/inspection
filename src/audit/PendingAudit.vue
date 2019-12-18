@@ -4,11 +4,11 @@
             <mt-header title="待稽查"></mt-header>
             <div>
                 <!--            第一个点击   点击计划-->
-                <ul class="pending_plan">
-                    <li v-for="(item,index) in planlist">
-                        <button @click="changecolor(index)" :class="{liBackground:planButton == index}">
-                            <div>{{item.PlanName }}</div>
-                        </button>
+                <ul class="pending_plan"  @click="getMousePos()" id="gundong">
+                    <li v-for="(item,index) in planlist" >
+                            <button @click="changecolor(index)" :class="{liBackground:planButton == index}">
+                                <div>{{item.PlanName }}</div>
+                            </button>
                     </li>
                 </ul>
             </div>
@@ -88,6 +88,7 @@
                     </router-link>
                 </div>
                 <div class="foo">
+
                     <router-link :to="{name:'home',query:{id:'设置'}}">
                         <mt-tab-item id="设置">
                             <span class="tip" v-show="versions?true:false"></span>
@@ -110,9 +111,11 @@
     </div>
 </template>
 <script>
+    import {MessageBox, Popup, Toast, Picker, Actionsheet, Cell, DatetimePicker} from "mint-ui";
     export default {
         data() {
             return {
+                num:'',
                 versions:"",//是否需要升级，需要升级则显示红点
                 datas: [],           //每个计划的详细信息
                 planButton: 0,      //初始选中index=0的稽查计划 被选择计划的index，来改变被选计划的背景颜色
@@ -122,12 +125,29 @@
                 familyList: [],    //稽查计划里面的小区里面对应的每户列表
                 houseList: [],  //每个室信息
                 // 正常 强停  报停 未供
+                xposition:0,
+                yposition:0,
             }
         },
         activated() {
-            // this.communityList[this.planlistButton].CommunityID
+            this.changecolor(this.planButton)
+            $("#gundong").scrollLeft(this.xposition)
         },
+        beforeRouteLeave(to,from,next) {
+            if (to.name === 'inspection') {
+                if (!from.meta.keepAlive) {
+                    from.meta.keepAlive = true;//当我们进入到C时开启B的缓存
+                }
+                next()
+            } else {
+                // from.meta.keepAlive = false;
+                // this.$destroy();//销毁B的实例
+                next();//当我们前进的不是C时我们让B页面刷新
+            }
+        },
+
         mounted() {
+            // window.addEventListener('scroll', this.handleScroll)
             var total = document.documentElement.clientHeight - 183;
             // document.getElementById("eachplan_content").style.height=total+"px";
             document.getElementById("plan_content").style.height=total+"px";
@@ -150,12 +170,28 @@
                     //稽查计划  小区列表
                     this.changecolor(0)
                     this.datas = this.planlist[0]   //初始话  计划名 和开始日期
+                    // console.log(this.planlist)
                 })
-            this.$store.state.datas = this.datas
+            // this.comebefor()
         },
         methods: {
+            // comebefor(){
+            //     if(this.$route.query.id == 'home'){
+            //         this.datas = this.planlist[0]
+            //         // console.log(this.datas)
+            //     }else{
+            //        this.datas=this.$store.state.datas
+            //     }
+            // },
             //第一个点击 计划
+            getMousePos() {
+                this.xposition = $("#gundong").scrollLeft()
+                console.log(this.xposition)
+
+            },
             changecolor(index) {
+                // console.log($("button").scrollTop());
+                // console.log($("button").scrollLeft());
                 this.planButton = index;
                 this.datas = this.planlist[index]
                 // console.log(this.datas)          //稽查计划的信息 点击第几个的
@@ -204,7 +240,7 @@
                     .then(res => {
                         var _this = this
                         this.familyList = res.body.Data
-                        console.log(this.familyList)
+                        // console.log(this.familyList)
                         this.familyList.forEach(function (item) {
                             if (item.IsCheckBlackMeaning == '是') {
                                 item.IsCheckBlackMeaning = '黑'
@@ -223,7 +259,7 @@
                 // console.log(this.planlist)
                 // console.log(this.communityList)
                 // console.log(this.familyList)
-                console.log(this.houseList)
+                // console.log(this.houseList)
                 // console.log(this.$store.CurrentYear)
             },
             getHomeData(){
@@ -238,7 +274,7 @@
                             if (resInfo.IsSuccess) {
                                 var Version=resInfo.Data.Version
                                 var oldVersions=_this.$store.versions
-                                console.log(oldVersions)
+                                // console.log(oldVersions)
 
                                 // 判断版本号，新老版本号比较
                                 if (Version.split('.').join('') > oldVersions.split('.').join('')) {
@@ -303,11 +339,13 @@
 
 .pending_plan {
     width: 100%;
-    white-space: nowrap;
+    /*width: 500px;*/
+    /*height: 500px;*/
     overflow: auto;
+    white-space: nowrap;
+    /*overflow: auto;*/
     margin-bottom: 0;
     background-color: #FFF;
-
 }
 
 .pending_plan > li {
@@ -316,14 +354,12 @@
     padding: 10px;
     display: inline-block;
     text-align: center;
-
 }
 
 .pending_plan > li > button {
     padding: 8px 14px;
     box-shadow: 0 2px 4px 0 rgba(44, 44, 44, 0.50);
 }
-
 .liBackground {
     color: #fff;
     background: #45AFFF;

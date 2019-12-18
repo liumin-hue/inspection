@@ -542,7 +542,6 @@
             }
 
         },
-
         methods: {
             isQuestion(index) {
                 // 先取消所有选中项
@@ -637,7 +636,10 @@
             },
 
             back() {
-                this.$router.go(-1);
+                this.$router.push({
+                    name:'PendingAudit',
+                });
+
             },
             finishStatus() {
                 this.questionState = !this.questionState;
@@ -818,7 +820,7 @@
             savaData() {
                 let _this = this;
                 // console.log(this.$store.token + '')
-                // console.log(this.houseList.SendJobID)
+                console.log(_this.houseList.SendJobID)
                 // console.log(this.houseList.CusID)
                 // console.log(this.houseList.CusName)
                 // console.log(this.quesTypeValue)   //问题类型ID
@@ -850,7 +852,7 @@
                         if (status == 200) {
                             try {
                                 let info = $.parseJSON(t.responseText);
-                                _this.$router.go(-1);
+                                _this.$router.push('/PendingAudit');
                                 zm=0
                                 Toast(info.Message);
                             } catch (e) {
@@ -1019,6 +1021,14 @@
                 plus.device.dial(this.ContactPhone, true);
             },
         },
+        // beforeRouteLeave(to,from,next) {
+        //     if (to.name === 'PendingAudit') {
+        //         if (!from.meta.keepAlive) {
+        //             from.meta.keepAlive = true;//当我们进入到C时开启B的缓存
+        //         }
+        //         next()
+        //     }
+        // },
 
     }
 </script>

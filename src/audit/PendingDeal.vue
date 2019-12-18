@@ -5,7 +5,7 @@
             <mt-header title="待处理"></mt-header>
             <div>
                 <!--            第一个点击   点击计划-->
-                <ul class="pending_plan">
+                <ul class="pending_plan" @click="getMousePos()" id="gundong">
                     <li v-for="(item,index) in planlist">
                         <button @click="changecolor(index)" :class="{liBackground:planButton == index}">
                             <div>{{item.PlanName }}</div>
@@ -108,10 +108,24 @@
                 familyList: [],    //稽查计划里面的小区里面对应的每户列表
                 houseList: [],  //每个室信息
                 // 正常 强停  报停 未供
+                xposition:0,
             }
         },
         activated() {
-            // this.communityList[this.planlistButton].CommunityID
+            this.changecolor(this.planButton)
+            $("#gundong").scrollLeft(this.xposition)
+        },
+        beforeRouteLeave(to,from,next) {
+            if (to.name === 'dealAudit') {
+                if (!from.meta.keepAlive) {
+                    from.meta.keepAlive = true;//当我们进入到C时开启B的缓存
+                }
+                next()
+            } else {
+                // from.meta.keepAlive = false;
+                // this.$destroy();//销毁B的实例
+                next();//当我们前进的不是C时我们让B页面刷新
+            }
         },
         mounted() {
             var total = document.documentElement.clientHeight - 183;
@@ -142,6 +156,10 @@
             this.$store.state.datas = this.datas
         },
         methods: {
+            getMousePos() {
+                this.xposition = $("#gundong").scrollLeft()
+                console.log(this.xposition)
+            },
             //第一个点击 计划
             changecolor(index) {
                 this.planButton = index;

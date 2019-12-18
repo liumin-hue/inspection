@@ -89,35 +89,19 @@ Vue.use(MyPluginAddConfig);
 var router = new VueRouter({
     //默认使用hash模式
     //mode: 'history',
+    scrollBehavior(to, from, savePosition) {
+        if (savePosition) {
+            console.log(savePosition)
+            return savePosition
+        } else {
+            // if (from.meta.keepAlive) {
+            //     from.meta.savedPosition = document.body.scrollTop
+            // }
+            // return { x: 0, y: to.meta.savedPosition || 0 }
+            return { x: 1, y: 30 }
+        }
+    },
     routes: [
-
-        // { path: "/host", component: Host, meta: { keepAlive: true } },
-        // { path: "/home", component: Home, name: "Home", meta: { keepAlive: true } },
-        // { path: "/GIS/repairman", name: "Repairman", component: Repairman, meta: { keepAlive: false } },
-        // { path: "/GIS/repairmanOrder/:id/:RepairUserName", name: "RepairmanOrder", component: RepairmanOrder, meta: { keepAlive: true } },
-        // { path: "/GIS/community", name: "Community", component: Community, meta: { keepAlive: false } },
-        // { path: "/GIS/communityOrder/:id/:CommunityName/:lng/:lat", name: "CommunityOrder", component: CommunityOrder, meta: { keepAlive: true } },
-        // { path: "/GIS/workline/:id", component: WorkLine, meta: { keepAlive: false } },
-        // { path: "/statistics/repairmanStatistics", name: "RepairmanStatistics", component: RepairmanStatistics, meta: { title: "RepairmanStatistics", keepAlive: false } },
-        // { path: "/statistics/repairTeamStatistics", name: "RepairTeamStatistics", component: RepairTeamStatistics, meta: { title: "RepairmanStatistics", keepAlive: false } },
-        // { path: "/statistics/componyStatistics", name: "ComponyStatistics", component: ComponyStatistics, meta: { title: "ComponyStatistics", keepAlive: true } },
-        // { path: "/myWorkOrder/toAccept", name: "ToAccept", component: ToAccept, meta: { title: "ToAccept", keepAlive: true } },
-        // { path: "/myWorkOrder/workOrderPond", name: "WorkOrderPond", component: WorkOrderPond, meta: { title: "WorkOrderPond", keepAlive: true } },
-        // { path: "/myWorkOrder/teamOrder", name: "TeamOrder", component: TeamOrder, meta: { title: "TeamOrder", keepAlive: true } },
-        // { path: "/myWorkOrder", name: "MyWorkOrder", component: MyWorkOrder, meta: { title: "MyWorkOrder", keepAlive: true } },
-        // { path: "/myWorkOrder/delay/:WorkBillID/:FlowID/:FlowInstantID/:FlowNodeID/:FlowToDoTS/:latestVersion/:ContactPerson", name: "Delay", component: Delay, meta: { title: "Delay", keepAlive: true }, },
-        // { path: "/myWorkOrder/reassignment/:WorkBillID/:FlowID/:FlowInstantID/:FlowNodeID/:FlowToDoTS/:latestVersion/:source/:ContactPerson", name: "Reassignment", component: Reassignment, meta: { title: "Reassignment", keepAlive: true }, },
-        // { path: "/myWorkOrder/workOrderReply/:WorkBillID/:FlowID/:FlowInstantID/:FlowNodeID/:FlowToDoTS/:latestVersion", name: "WorkOrderReply", component: WorkOrderReply, meta: { title: "WorkOrderReply", keepAlive: true }, },
-        // { path: "/myWorkOrder/workOrderReplyResult", name: "workOrderReplyResult", component: workOrderReplyResult, meta: { title: "workOrderReplyResult", keepAlive: false }, },
-        // { path: "/myWorkOrder/workOrderDetails/:WorkBillID/:FlowID/:FlowInstantID/:FlowNodeID/:FlowToDoTS/:latestVersion", name: "WorkOrderDetails", component: WorkOrderDetails, meta: { keepAlive: false } },
-        // { path: "/myWorkOrder/workOrderBack/:WorkBillID/:FlowID/:FlowInstantID/:FlowNodeID/:FlowToDoTS/:latestVersion/:source", name: "WorkOrderBack", component: WorkOrderBack, meta: { keepAlive: true } },
-        // { path: "/myWorkOrder/workOrderStep/:WorkBillID", component: WorkOrderStep,name:"WorkOrderStep", meta: { keepAlive: false } },
-        // { path: "/myWorkOrder/allOfWorkorder/:roomid/:workBillID", component: AllOfWorkorder, meta: { keepAlive: true } },
-        // { path: "/myWorkOrder/workOrderAssign/:WorkBillID/:FlowID/:FlowInstantID/:FlowNodeID/:FlowToDoTS/:latestVersion/:source", component: WorkOrderAssign, meta: { keepAlive: true } },
-        // { path: "/setting/changeInfo", component: ChangeInfo, meta: { keepAlive: false } },
-        // { path: "/setting/changePassword", component: ChangePassword, meta: { keepAlive: false } },
-        // { path: "/setting/versions", component: Versions, meta: { keepAlive: false } },
-        // { path: "/myFollow/myfollow", component: MyFollow, meta: { keepAlive: false } },
         { path: "/host", component: Host, meta: { keepAlive: true } },
         { path: '/', redirect: "/login", meta: { keepAlive: false } },
         { path: "/login", component: login, meta: { keepAlive: false } },
@@ -125,31 +109,49 @@ var router = new VueRouter({
         { path: "/home",name:'home', component: home, meta: { keepAlive: false } },
         { path: "/AuditRecord", component: AuditRecord },
         { path: "/Blacklist", component: Blacklist },
-        { path: "/PendingAudit",name:'PendingAudit', component: PendingAudit },
-        { path: "/PendingDeal", name:'PendingDeal', component: PendingDeal },
+        { path: "/PendingAudit",name:'PendingAudit', component: PendingAudit,meta: { keepAlive: true }},
+        { path: "/PendingDeal", name:'PendingDeal', component: PendingDeal, meta: { keepAlive: true } },
         { path: "/InspectionDetail", component: InspectionDetail },
-        { path: "/inspection", component: Inspection },
-        { path: "/dealAudit", component: dealAudit, meta: { keepAlive: false } },
+        { path: "/inspection",name:'inspection', component: Inspection },
+        { path: "/dealAudit",name:'dealAudit', component: dealAudit, meta: { keepAlive: false } },
         { path: "/audit/changePassword", component: ChangePassword, meta: { keepAlive: false } },
         { path: "/audit/versions", component: Versions, meta: { keepAlive: false } },
         // { path: "/audit/changeInfo", component: ChangeInfo, meta: { keepAlive: false } },
         // { path: "/audit/set", component: set, meta: { keepAlive: false } },
     //
-    ],
-    // scrollBehavior(to, from, savedPosition) {
-    //     if (savedPosition) {
-    //         return savedPosition
-    //     } else {
-    //         if (from.meta.keepAlive) {
-    //             from.meta.savedPosition = document.body.scrollTop
-    //         }
-    //         return { x: 0, y: to.meta.savedPosition || 0 }
-    //     }
-    // }
+    ]
 })
 // router.addRoutes()
 
-
+router.afterEach((to, from) => {
+    console.log(from);
+    if (from.name == 'home' && to.name == 'PendingAudit') {
+        let isRefresh = sessionStorage.getItem('isRefresh');
+        console.log(isRefresh)
+        if (isRefresh === '0') {
+            sessionStorage.setItem('isRefresh', null);
+            // window.location.reload()
+            vm.$router.push('/PendingAudit')
+        } else {
+            sessionStorage.setItem('isRefresh', 0);
+        }
+    } else if (to.name == 'home' && from.name == 'PendingAudit') {
+        sessionStorage.setItem('isRefresh', 0)
+    } else if (from.name == 'home' && to.name == 'PendingDeal') {
+        let isRefreshd = sessionStorage.getItem('isRefreshd');
+        console.log(isRefreshd)
+        if (isRefreshd === '0') {
+            sessionStorage.setItem('isRefreshd', null);
+            // window.location.replace('/#PendingAudit')
+            // vm.$router.go(0)
+        } else {
+            sessionStorage.setItem('isRefreshd', 0);
+        }
+    } else if (to.name == 'home' && from.name == 'PendingDeal') {
+        sessionStorage.setItem('isRefreshd', 0)
+    }
+})
+// var vm=this
 //===================================Vuex管理=====================================>
 var store = new Vuex.Store({
     state: {

@@ -117,12 +117,12 @@
 
                         <div class="mui-table-view-cell" v-show="!blackShow">
                             <div>黑名单性质</div>
-                            <span>{{BlackListSelectedName}}<span class="mui-icon mui-icon-arrowdown"></span></span>
+                            <span>{{BlackListSelectedName1}}<span class="mui-icon mui-icon-arrowdown"></span></span>
                         </div>
 
                         <div id="popselet" class="mui-table-view-cell" @click="chooseBlackList()" v-show="blackShow">
                             <div>黑名单性质</div>
-                            <span>{{BlackListSelectedName}}<span class="mui-icon mui-icon-arrowdown"></span></span>
+                            <span>{{BlackListSelectedName2}}<span class="mui-icon mui-icon-arrowdown"></span></span>
                         </div>
                         <!-- 黑名单性质下拉 -->
                         <mt-popup v-model="BlackList" popup-transition="popup-fade" position="bottom" class="bottomPicker" >
@@ -305,7 +305,8 @@
                     }
                 ],
                 //--------------------------黑名单性质
-                BlackListSelectedName: "",//选中项中文名称
+                BlackListSelectedName1: "",//选中项中文名称
+                BlackListSelectedName2: "",//选中项中文名称
                 BlackListValue: "",//选中项value（即ID）
                 BlackList: false,
                 BlackListItems: [
@@ -393,88 +394,10 @@
             this.IsCheckBlackMeaning = this.houseList.IsCheckBlackMeaning
             //---------------------------------------------------------------初始化数据
 
-            // // this.loadingData()
-            // this.$http
-            //     .get(this.$myConfig.host + "/Api/DropdownList/GetProblemDropDown")
-            //     .then(
-            //         function (res) {
-            //             var resInfo = res.body.Data
-            //             if (resInfo) {
-            //                 this.quesTypeItems[0].values = res.body.Data;
-            //                 this.quesTypeItems[0].values.unshift({TypeName: '请选择 *', ID: ''})
-            //                 // for(var i = 0; i<this.quesTypeItems.length;i++){
-            //                 //     if(this.quesTypeSelectedName==this.quesTypeItems.values[i].TypeName){
-            //                 //         this.quesTypeItems.defaultIndex = i
-            //                 //         this.quesTypeValue = this.quesTypeItems[i].ID
-            //                 //     }
-            //                 //     console.log(this.quesTypeItems.values)
-            //                 // }
-            //             }
-            //         })
-            // //---------------------------------------------------------------处理状态
-            // // this.loadingStatus()
-            // this.$http
-            //     .get(this.$myConfig.host + "/Api/DropdownList/GetProStatusDropDown")
-            //     .then(
-            //         function (res) {
-            //             var resInfo = res.body.Data
-            //             if (resInfo) {
-            //                 this.proStatusItems[0].values = res.body.Data;
-            //                 this.proStatusItems[0].values.unshift({Name:'请选择 *', ID:''})
-            //                 // console.log(this.proStatusItems)
-            //                 // console.log(resInfo)
-            //             }
-            //         });
-            //
-            //
-            // //---------------------------------------------------------------黑名单性质
-            // // this.loadingBlack()
-            // this.$http
-            //     .get(this.$myConfig.host + "/Api/DropdownList/GetBlackListDropDown")
-            //     .then(
-            //         function (res) {
-            //             var resInfo = res.body.Data
-            //             if (resInfo) {
-            //                 this.BlackListItems[0].values = res.body.Data;
-            //                 this.BlackListItems[0].values.unshift({TypeName:'请选择 *', ID:''})
-            //             }
-            //         });
-
 
             Promise.all([this.loadingQuestion(), this.loadingStatus(), this.loadingBlack()],this.loadingData()).then(function() {
 
             });
-
-            // this.$http
-            //     .get(this.$myConfig.host + '/Api/InspectionOpera/SearchInspectionRec', {
-            //         params: {
-            //             IsSearch: 0,
-            //             SendJobID: this.$store.state.houseList.SendJobID,
-            //         }
-            //     })
-            //     .then(res => {
-            //         var resInfo = res.body.Data
-            //         if (resInfo) {
-            //             console.log(resInfo)
-            //             this.quesTypeSelectedName=resInfo.Problem//问题类型
-            //             this.quesTypeValue=resInfo.ProblemID//问题类型
-            //             this.proStatusItems[0].defaultIndex=resInfo.ProStatus//处理状态
-            //             this.proStatusSelectedName=resInfo.ProStatusMeaning//处理状态
-            //             this.BlackListValue=resInfo.BlackListTypeID//处理状态
-            //             this.BlackListSelectedName=resInfo.BlackListType//处理状态
-            //             this.blackRemark=resInfo.BlackListRemark//处理状态
-            //             this.details = resInfo.ProblemDes  //详情
-            //             this.advance = resInfo.SuggestDes  //处理意见
-            //             this.Image = resInfo.ImgList  //图片
-            //             if(this.blackRemark == 'null'){
-            //                 this.blackRemark = ''
-            //             }
-            //             console.log(this.quesTypeValue)
-            //             // console.log(this.proStatusItems[0].defaultIndex)
-            //
-            //         }
-            //     })
-
 
             //----------------------------------------------------------------黑名单显示  加入 / 移除
             if (this.houseList.IsCheckBlack == 0) {
@@ -553,7 +476,7 @@
                             this.proStatusItems[0].defaultIndex=resInfo.ProStatus//处理状态
                             this.proStatusSelectedName=resInfo.ProStatusMeaning//处理状态
                             this.BlackListValue=resInfo.BlackListTypeID//处理状态
-                            this.BlackListSelectedName=resInfo.BlackListType//处理状态
+                            this.BlackListSelectedName1=resInfo.BlackListType//处理状态
                             this.blackRemark=resInfo.BlackListRemark//处理状态
                             this.details = resInfo.ProblemDes  //详情
                             this.advance = resInfo.SuggestDes  //处理意见
@@ -665,7 +588,7 @@
             //picker监听变化事件
             BlackListChange(picker, values) {
                 if (values[0]) {
-                    this.BlackListSelectedName = values[0].TypeName;
+                    this.BlackListSelectedName2 = values[0].TypeName;
                     this.BlackListValue = values[0].ID;
                 }
             },
