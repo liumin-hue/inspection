@@ -1,6 +1,6 @@
 <template>
     <div class="black_list">
-        <div class="black_select" style="position: fixed; top: 0px">
+        <div class="black_select">
         <mt-header title="黑名单">
             <mt-button icon="back" slot="left" @click="back"></mt-button>
         </mt-header>
@@ -25,7 +25,12 @@
                         </div>
                         <div class="phone"><span class="texttitle">操作人：</span>{{item.CreatorName}}</div>
                     </div>
-                    <div class="people_name"><span class="status">黑名单备注：</span>{{item.Remark}}</div>
+                    <div class="model_bottom">
+                        <div class="b_remark"><span><span class="texttitle">黑名单备注：</span>{{item.Remark}}</span>
+                        </div>
+                        <div v-show="btnShow" class="removelimit"><button  class="remove_btn" @click="RemoveBlack(index)">移除</button></div>
+                    </div>
+                    <!-- <div class="people_name"><span class="status">黑名单备注：</span>{{item.Remark}}</div> -->
                 </li>
         </ul>
         <!--  底部tab      -->
@@ -52,7 +57,8 @@
 </template>
 <script>
     import $ from 'jquery'
-
+    import { MessageBox } from "mint-ui";
+    import { Toast } from "mint-ui";
     export default {
         data() {
             return {
@@ -75,14 +81,23 @@
                 cusID:'',
                 communityID:'',
                 IsProblem:'',
+                btnShow:false,
             }
         },
         mounted() {
-            console.log(this.$store.state.loginInfo)
+            console.log(this.$store.isRemoveID)
+            if(this.$store.isRemoveID.length == 0){
+                this.btnShow = false
+                console.log("没有操作权限")
 
+            }else{
+                this.btnShow = true
+                console.log("可以进行操作")
+
+            }
             this.userName = this.$store.state.loginInfo.UserName
             this.finishText = this.$store.state.finishText
-            //稽查计划列表，小区列表
+            //稽查计划列表，小区列表 
             this.auditPlan()
             this.getHomeData()//获取新版本号
         },
@@ -129,10 +144,53 @@
             },
             auditDetail(index){
                 this.$store.state.reLiDetail = this.datas[index]
-                console.log(this.$store.state.blackDetail)
+                // console.log(this.$store.state.blackDetail)
             },
             searchBtn(){
                 this.auditPlan()
+            },
+            RemoveBlack(ind){
+                console.log(this.datas[ind].CusID)
+                var cusId=this.datas[ind].CusID
+                     this.$http
+                        .post(this.$myConfig.host + '/Api/BlackList/CancelBlackList',{ 
+                            "isAll": false,
+                            "CusIDs":[cusId]
+                        }).then(res=>{
+                            var resInfo = $.parseJSON(res.bodyText);
+                            var newDatas = this.datas
+                            if (resInfo.IsSuccess) {
+                                this.datas=newDatas.filter(function(item){
+                                    return item != newDatas[ind]
+                                })
+                                console.log(this.datas)
+                                Toast(resInfo.Message);
+                            } else {
+                            Toast(resInfo.Message);
+                            }
+                        })
+                // MessageBox.confirm("确定移出此黑名单?").then(action => {
+                // //修改密码接口
+                //     this.$http
+                //         .post(this.$myConfig.host + '/Api/BlackList/CancelBlackList',{ 
+                //             "isAll": false,
+                //             "CusIDs":[cusId]
+                //         })
+                //         .then(
+                //         function(res) {
+                //             var resInfo = $.parseJSON(res.bodyText);
+                //             if (resInfo.IsSuccess) {
+                //                 this.$router.go(-1)
+                //                 Toast(resInfo.Message);
+                //             } else {
+                //             Toast(resInfo.Message);
+                //             }
+                //         },
+                //         function(err) {
+                //             Toast("请检查您的网络");
+                //         }
+                //         );
+                // });             
             },
             getHomeData(){
                 var _this = this;
@@ -200,4 +258,19 @@
     .datas{
         margin-bottom: 50px;
     }
+    .remove_btn{
+        position: none;
+        /* right: 20px; */
+        background-color: #49a9ea;
+        font-size: 13px;
+        padding:5px 9px;
+    }
+   .black_select{
+       z-index: 20;
+       position: fixed; 
+       top: 0px;
+   }
+   .b_remark{
+       width:70%;
+   }
 </style>

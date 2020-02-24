@@ -148,16 +148,13 @@
                 WaitProcessedNum:"",//待处理
                 InspectionRecNum:"",//稽查记录
                 BlackListNum:"",//黑名单
-
+                limitIdList:"",//黑名单权限id
                 tab_selected: "首页",
-                //toAccept: 0,
-                //workOrderPoolNew: 0,
                 isLoading: false,//载入动画
                 versions: false,//是否提示有新版本
                 oldVersions: "3.0.3"//旧版本号
             };
         },
-        props: {},
         watch: {
             tab_selected: function (val, oldVal) {
                 console.log(val);
@@ -176,175 +173,40 @@
             // 保存手机版本号
             this.$store.versions = this.oldVersions
             console.log(this.$store.versions)
-            this.getHomeData();//获取首页数据统计
+            this.getHomeData()//获取首页数据统计
             this.comebefor()
+            this.btnLimit()
         },
-        // beforeRouteLeave: (to, from, next) => {
-        //     // to.meta.keepAlive = false
-        //     to.meta.keepAlive = false;
-        //     next()
-        // },
-        //判断跳转路径
-        // beforeRouteEnter: (to, from, next) => {
-        //     //获取当前页面
-        //     var thisPage = to.matched[0].instances.default;
-        //     //根据跳转前路径清空新工单
-        //     if (from.name == "ToAccept") {
-        //         // console.log("from.name")
-        //         thisPage.toAccept = 0;
-        //         try {
-        //             plus.storage.setItem(
-        //                 "gdky_myWorkOrderTime",
-        //                 thisPage.formatDate(new Date(), "yyyy-MM-dd hh:mm:ss")
-        //             ); //我的工单退出时间注册
-        //         } catch (e) {
-        //         }
-        //     } else if (from.name == "WorkOrderPond") {
-        //         thisPage.workOrderPoolNew = 0;
-        //         try {
-        //             plus.storage.setItem(
-        //                 "gdky_workOrderPoolTime",
-        //                 thisPage.formatDate(new Date(), "yyyy-MM-dd hh:mm:ss")
-        //             ); //工单池退出时间注册
-        //         } catch (e) {
-        //         }
-        //     }
-        //     source = from.name;
-        //      console.log(source);
-        //     next();
-        // },
+     
         activated() {
             this.getHomeData();
-            //获取手机cid
-            // try {
-            //     var info = plus.push.getClientInfo();
-            //     //计时器获取cid
-            //     var timer = setInterval(function () {
-            //         if (info.clientid == "") {
-            //             info = plus.push.getClientInfo();
-            //             // console.log("获取cid失败");
-            //             return false;
-            //         } else {
-            //             plus.storage.setItem("gdkykf_clientid", info.clientid); //注册手机cid
-            //             //更新cid
-            //             _this.$http
-            //                 .post(
-            //                     _this.$myConfig.host +
-            //                     "/api/UserLogin/PostUpdateClientIDByUserID",
-            //                     {
-            //                         UserID: _this.$store.UserInfo.UserID,
-            //                         ClientID: info.clientid
-            //                     },
-            //                     {emulateJSON: true}
-            //                 )
-            //                 .then(
-            //                     function (res) {
-            //                         let resInfo = $.parseJSON(res.bodyText);
-            //                         //判断登录信息
-            //                         if (resInfo.ReturnResult) {
-            //                             // Toast("获取cid成功");
-            //                             // console.log(info.clientid);
-            //                         } else {
-            //                             Toast(resInfo.Message);
-            //                         }
-            //                     },
-            //                     function (err) {
-            //                         Toast("请检查您的网络");
-            //                     }
-            //                 );
-            //             clearInterval(timer);
-            //             // console.log("获取cid成功");
-            //         }
-            //     }, 50);
-            // } catch (e) {
-            // }
-            // 挂载首页时查看新工单
-            // try {
-            //     var MyWorkOrderTime = plus.storage.getItem("gdky_myWorkOrderTime");
-            //     var WorkOrderPoolTime = plus.storage.getItem("gdky_workOrderPoolTime");
-            // } catch (e) {
-            //     var MyWorkOrderTime = "";
-            //     var WorkOrderPoolTime = "";
-            // }
-            // 获取用户工单信息
-            // this.$http
-            //     .get(this.$myConfig.host + "/api/UserLogin/GetMountPrepareConditions", {
-            //         params: {
-            //             UserID: this.$store.UserInfo.UserID,
-            //             MyWorkOrderTime: MyWorkOrderTime, // plus.storage.getItem(gdky_myWorkOrderTime)====>获取点击我的工单退出时间
-            //             WorkOrderPoolTime: WorkOrderPoolTime // plus.storage.getItem(gdky_workOrderPoolTime)====>获取点击我的工单退出时间
-            //         }
-            //     })
-            //     .then(
-            //         function (res) {
-            //             let resInfo = $.parseJSON(res.bodyText);
-            //             // console.log(resInfo);
-            //             if (resInfo.ReturnResult) {
-            //                 // console.log(resInfo.AppVersionName.split('.').join('') , resInfo.AppVersionName.split('.').join(''))
-            //                 // 判断版本号
-            //                 if (resInfo.AppVersionName.split('.').join('') > this.$store.versions.split('.').join('')) {
-            //                     this.versions = true
-            //                     this.$store.newVersions = resInfo.AppVersionName
-            //                 } else {
-            //                     this.versions = false
-            //                 }
-            //                 _this.$store.toAcceptNew = resInfo.WaitReceptionBillsCounts;
-            //                 _this.$store.workOrderPoolNew = resInfo.WorkOrderPoolPrompCounts;
-            //                 //新工单赋值
-            //                 this.toAccept = this.$store.toAcceptNew;
-            //                 this.workOrderPoolNew = this.$store.workOrderPoolNew;
-            //             } else {
-            //                 Toast(resInfo.Message);
-            //             }
-            //         },
-            //         function (err) {
-            //             Toast("请检查您的网络");
-            //         }
-            //     );
             // 判断路由跳转
             if (this.$store.isLogin) {
                 //this.loadmap(); //加载地图和相关组件
                 this.tab_selected = "首页";
                 this.$store.isLogin = false;
             }
-            // console.log(this.$store.state.isNewWorkOrder);
-
-            //获取用户权限
-            // this.$http
-            //     .get(this.$myConfig.host + "/api/UserLogin/GetPrepareConditions", {
-            //         params: {
-            //             UserID: this.$store.UserInfo.UserID
-            //         }
-            //     })
-            //     .then(
-            //         function (res) {
-            //             let resInfo = $.parseJSON(res.bodyText);
-            //             //判断登录信息
-            //             if (resInfo.ReturnResult) {
-            //                 // console.log(resInfo.Permisions);
-            //                 for (let i = 0; i < resInfo.Permisions.length; i++) {
-            //                     if (resInfo.Permisions[i] == "gdqrfp") {
-            //                         this.$store.assign = true;
-            //                         break;
-            //                     } else {
-            //                         this.$store.assign = false;
-            //                         continue;
-            //                     }
-            //                 }
-            //                 //保存用户权限
-            //                 _this.$store.Permisions = resInfo.Permisions;
-            //             } else {
-            //                 Toast(resInfo.Message);
-            //             }
-            //         },
-            //         function (err) {
-            //             Toast("请检查您的网络");
-            //         }
-            //     );
         },
         deactivated() {
         },
         methods: {
+            btnLimit(){
+                this.$http
+                    .get(this.$myConfig.host + '/Api/DropdownList/GetButtonNavigation')
+                    .then(res=> {
+                        var limitData=[]
+                        limitData = res.data.Data
+                        // console.log(limitData)
+                        this.limitIdList=limitData.filter(function(item){
+                            return item.ID == 900050001
+                            // return item.ID == 30001
+                        })
+                        // console.log(this.limitIdList)
+                        this.$store.isRemoveID = this.limitIdList
+                        console.log(this.$store.isRemoveID)
+
+                    })
+            },
             comebefor(){
                 if(this.$route.query.id == '设置'){
                     this.tab_selected='设置'

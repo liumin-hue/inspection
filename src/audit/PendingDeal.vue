@@ -290,7 +290,7 @@
 
     .pending_plan > li > button {
         padding:8px 14px;
-        box-shadow: 0 2px 4px 0 rgba(44, 44, 44, 0.21);
+        /* box-shadow: 0 2px 4px 0 rgba(44, 44, 44, 0.21); */
     }
 
     .liBackground {

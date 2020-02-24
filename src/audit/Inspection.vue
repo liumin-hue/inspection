@@ -110,33 +110,33 @@
                             <div class="mui-table-view-cell" id="advanceID" v-show="!haveQuestion">
                                 <mt-field  label="处理意见" type="textarea" rows="4" v-model="advance" :attr="{ maxlength: 100 }" style="padding-left:0.06rem"></mt-field>
                             </div>
+                            <div v-show="blackBtnLimit">
+                                <div class="mui-table-view-cell checkmod">
+                                    <div>黑名单</div>
+                                    <span><mt-checklist v-model="blackcheck" :options="radiolist" @change="blackChange" class="checkblack" style="height:0.2rem"></mt-checklist>
+                                        </span>
+    <!--                                <input type="checkbox" v-model="blackcheck" :options="radiolist" @change="blackChange" class="checkblack" style="height:0.23rem">-->
+                                </div>
 
-                            <div class="mui-table-view-cell checkmod">
-                                <div>黑名单</div>
-                                <span><mt-checklist v-model="blackcheck" :options="radiolist" @change="blackChange" class="checkblack" style="height:0.2rem"></mt-checklist>
-                                    </span>
-<!--                                <input type="checkbox" v-model="blackcheck" :options="radiolist" @change="blackChange" class="checkblack" style="height:0.23rem">-->
+                                <div class="mui-table-view-cell" v-show="!blackShow">
+                                    <div>黑名单性质</div>
+                                    <span>{{BlackListSelectedName2}}<span class="mui-icon mui-icon-arrowdown"></span></span>
+                                </div>
+
+                                <div id="popselet" class="mui-table-view-cell" @click="chooseBlackList()" v-show="blackShow">
+                                    <div>黑名单性质</div>
+                                    <span>{{BlackListSelectedName}}<span class="mui-icon mui-icon-arrowdown"></span></span>
+                                </div>
+                                <!-- 黑名单性质下拉 -->
+                                <mt-popup v-model="BlackList" popup-transition="popup-fade" position="bottom" class="bottomPicker" >
+                                    <div class="pickerTitle">请选择黑名单性质</div>
+                                    <mt-picker :slots="BlackListItems" @change="BlackListChange" value-key="TypeName"></mt-picker>
+                                </mt-popup>
+
+                                <div class="mui-table-view-cell" >
+                                    <mt-field label="黑名单备注" type="textarea" rows="4" v-model="blackRemark" class="black_remark"  :attr="{ maxlength: 100 }" :readonly="read" style="padding-left:0.06rem"></mt-field>
+                                </div>
                             </div>
-
-                            <div class="mui-table-view-cell" v-show="!blackShow">
-                                <div>黑名单性质</div>
-                                <span>{{BlackListSelectedName2}}<span class="mui-icon mui-icon-arrowdown"></span></span>
-                            </div>
-
-                            <div id="popselet" class="mui-table-view-cell" @click="chooseBlackList()" v-show="blackShow">
-                                <div>黑名单性质</div>
-                                <span>{{BlackListSelectedName}}<span class="mui-icon mui-icon-arrowdown"></span></span>
-                            </div>
-                            <!-- 黑名单性质下拉 -->
-                            <mt-popup v-model="BlackList" popup-transition="popup-fade" position="bottom" class="bottomPicker" >
-                                <div class="pickerTitle">请选择黑名单性质</div>
-                                <mt-picker :slots="BlackListItems" @change="BlackListChange" value-key="TypeName"></mt-picker>
-                            </mt-popup>
-
-                            <div class="mui-table-view-cell" >
-                                <mt-field label="黑名单备注" type="textarea" rows="4" v-model="blackRemark" class="black_remark"  :attr="{ maxlength: 100 }" :readonly="read" style="padding-left:0.06rem"></mt-field>
-                            </div>
-
                             <mt-button type="primary" size="large" @click="savaData" class="submit_btn">确定</mt-button>
                         </div>
                     </div>
@@ -283,6 +283,7 @@
                 imgs: [],    //上传图片
                 blackRemark: '',   //黑名单备注（表单textarea）
                 blacklist: '',     //黑名单   加入 移除
+                blackBtnLimit:true, //黑名单操作权限
                 isCheckBlack:'',   //客户资料中是否是黑名单
                 radiolist: '',
                 blackcheck: "",
@@ -464,7 +465,13 @@
             this.IsCheckBlackMeaning = this.houseList.IsCheckBlackMeaning
             this.isQuestion(1);        //是否有问题   初始选择1  无问题
             this.ContactPhone = this.$store.state.houseList.Mobile   // 手机号
-
+            // if(this.$store.isRemoveID.length == 0){
+            //     this.blackBtnLimit = false
+            //     console.log("没有操作权限")
+            // }else{
+            //     this.blackBtnLimit = true
+            //     console.log("可以进行操作")
+            // }
 
             //----------------------------------------------------------------黑名单显示  加入 / 移除
             if (this.houseList.IsCheckBlack == 0) {

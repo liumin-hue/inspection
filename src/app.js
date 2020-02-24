@@ -22,37 +22,8 @@ import '../static/render/css/mui.css';
 import '../static/css/global.css';
 
 import 'viewerjs/dist/viewer.css'
-
-//登录页
-// import Repairman from './GIS/repairman.vue'//GIS地图维修人员页面
-// import RepairmanOrder from './GIS/repairmanOrder.vue'//GIS地图维修人员详情页面
-// import Community from './GIS/community.vue'//GIS地图小区页面
-// import CommunityOrder from './GIS/communityOrder.vue'//GIS地图小区工单页面
-// import WorkLine from './GIS/workline.vue'//GIS地图工作轨迹
-// import ComponyStatistics from './statistics/componyStatistics.vue'//热力公司工单统计页面
-// import RepairmanStatistics from './statistics/repairmanStatistics.vue'//维修人员情况统计
-// import RepairTeamStatistics from './statistics/repairTeamStatistics.vue'//维修队工单统计
-// import ToAccept from './toAccept/toAccept.vue'//待接收工单页面
-// import WorkOrderPond from './workOrderPond/workOrderPond.vue'//工单池页面
-// import TeamOrder from './teamOrder/teamOrder.vue'//维修队工单页面
-// import MyWorkOrder from './myWorkOrder/myWorkOrder.vue'//我的工单页面
-// import Delay from './myWorkOrder/delay.vue'//延时申请页面
-// import Reassignment from './myWorkOrder/reassignment.vue'//工单改派页面
-// import WorkOrderReply from './myWorkOrder/workOrderReply.vue'//工单回复页面
-// import workOrderReplyResult from './myWorkOrder/workOrderReplyResult.vue'//工单回复处理结果
-// import WorkOrderDetails from './myWorkOrder/workOrderDetails.vue'//工单详情页面
-// import WorkOrderBack from './myWorkOrder/workOrderBack.vue'//工单退回页面
-// import AllOfWorkorder from './myWorkOrder/allOfWorkorder.vue'//全部工单页面
-// import WorkOrderStep from './myWorkOrder/workOrderStep.vue'//工单步骤页面
-// import WorkOrderAssign from './myWorkOrder/workOrderAssign.vue'//工单分派页面
-// import ChangeInfo from './setting/changeInfo.vue'//修改信息页面
-// import ChangePassword from './setting/changePassword.vue'//修改密码页面
-// import Versions from './setting/versions.vue'//版本升级页面
-// import MyFollow from './myFollow/myfollow.vue'//我的关注页面
-
 //Audit项目
 import Host from './audit/host.vue'
-// import login from './audit/login.vue'//登录页
 import login from './audit/login.vue'//登录页
 import home from './audit/home.vue'//首页
 import AuditRecord from './audit/AuditRecord.vue'//稽查记录
@@ -115,10 +86,7 @@ var router = new VueRouter({
         { path: "/inspection",name:'inspection', component: Inspection },
         { path: "/dealAudit",name:'dealAudit', component: dealAudit, meta: { keepAlive: false } },
         { path: "/audit/changePassword", component: ChangePassword, meta: { keepAlive: false } },
-        { path: "/audit/versions", component: Versions, meta: { keepAlive: false } },
-        // { path: "/audit/changeInfo", component: ChangeInfo, meta: { keepAlive: false } },
-        // { path: "/audit/set", component: set, meta: { keepAlive: false } },
-    //
+        { path: "/audit/versions", component: Versions, meta: { keepAlive: false } }
     ]
 })
 // router.addRoutes()
@@ -216,7 +184,9 @@ var store = new Vuex.Store({
         //======================InspectionDetail
         cusID:'',
         currentYear:'',
-        reLiDetail:''  //稽查记录详情
+        reLiDetail:'',  //稽查记录详情
+        // =====================黑名单
+        isRemoveID:''//移除权限
     },
     getters: {
         changeState: state => {

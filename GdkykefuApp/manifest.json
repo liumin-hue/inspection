@@ -1,9 +1,9 @@
-{
+﻿{
     "@platforms": ["android", "iPhone", "iPad"],
-    "id": "H5C235490",/*应用的标识，创建应用时自动生成，勿手动修改*/
+    "id": "H573DFC50",/*应用的标识，创建应用时自动生成，勿手动修改*/
     "name": "稽查",/*应用名称，程序桌面图标名称*/
     "version": {
-        "name": "3.0.3",/*应用版本名称*/
+        "name": "1.0",/*应用版本名称*/
         "code": ""
     },
     "description": "",/*应用描述信息*/
@@ -129,9 +129,9 @@
                 "android": {
                     "mdpi": "", /*普通屏启动图片，分辨率：240x282*/
                     "ldpi": "", /*大屏启动图片，分辨率：320x442*/
-                    "hdpi": "D:/KF/KefuApp/static/images/客服移动端切图/登录页/host.png", /*高分屏启动图片，分辨率：480x762*/
-                    "xhdpi": "D:/KF/KefuApp/static/images/客服移动端切图/登录页/host.png", /*720P高分屏启动图片，分辨率：720x1242*/
-                    "xxhdpi": "D:/KF/KefuApp/static/images/客服移动端切图/登录页/host.png"/*1080P高分屏启动图片，分辨率：1080x1882*/
+                    "hdpi": "322f15ecf23ee7b4fb5a60f71c67ed8b.png", /*高分屏启动图片，分辨率：480x762*/
+                    "xhdpi": "322f15ecf23ee7b4fb5a60f71c67ed8b.png", /*720P高分屏启动图片，分辨率：720x1242*/
+                    "xxhdpi": "322f15ecf23ee7b4fb5a60f71c67ed8b.png"/*1080P高分屏启动图片，分辨率：1080x1882*/
                 }
             }
         }
